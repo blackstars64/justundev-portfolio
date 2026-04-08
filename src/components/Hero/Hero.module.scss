@@ -1,0 +1,381 @@
+// =============================================================================
+// Hero.module.scss
+// =============================================================================
+
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+// ── Keyframes ─────────────────────────────────────────────────────────────────
+
+@keyframes heroSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroPulseDot {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba($status-success, 0.5);
+  }
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 5px rgba($status-success, 0);
+  }
+}
+
+// ── Section ───────────────────────────────────────────────────────────────────
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  background-color: $bg-primary;
+}
+
+// ── Glow background ───────────────────────────────────────────────────────────
+
+.glow {
+  position: absolute;
+  top: -15%;
+  right: -8%;
+  width: 640px;
+  height: 640px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba($accent-primary, 0.22) 0%,
+    rgba($accent-primary, 0.06) 45%,
+    transparent 70%
+  );
+  filter: blur(70px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+// ── Inner grid ────────────────────────────────────────────────────────────────
+
+.inner {
+  @include container;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $space-12;
+  padding-top: $space-8;
+  padding-bottom: $space-20;
+  align-items: center;
+
+  @include lg {
+    grid-template-columns: 5fr 4fr;
+    gap: $space-16;
+  }
+}
+
+// ── Left column — content ─────────────────────────────────────────────────────
+
+.content {
+  @include flex-col;
+  gap: $space-6;
+}
+
+// ── Badge ─────────────────────────────────────────────────────────────────────
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-1 $space-3;
+  border-radius: $radius-full;
+  background: rgba($status-success, 0.1);
+  border: 1px solid rgba($status-success, 0.3);
+  font-size: $fs-small;
+  font-weight: $fw-medium;
+  color: $status-success;
+  width: fit-content;
+
+  // Animation: badge enters first
+  opacity: 0;
+  animation: heroSlideUp 0.5s ease 0s forwards;
+}
+
+.badgeDot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: $status-success;
+  animation: heroPulseDot 2s ease-in-out 0.5s infinite;
+}
+
+// ── Headline ──────────────────────────────────────────────────────────────────
+
+.headline {
+  font-family: $font-sans;
+  font-size: clamp(2.5rem, 6vw, $fs-h1);
+  font-weight: $fw-bold;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: $text-primary;
+
+  opacity: 0;
+  animation: heroSlideUp 0.6s ease 0.1s forwards;
+}
+
+// ── Subtitle ──────────────────────────────────────────────────────────────────
+
+.subtitle {
+  font-size: $fs-body-lg;
+  color: $text-secondary;
+  line-height: $lh-body;
+  max-width: 48ch;
+
+  opacity: 0;
+  animation: heroSlideUp 0.5s ease 0.22s forwards;
+}
+
+// ── Tagline ───────────────────────────────────────────────────────────────────
+
+.tagline {
+  font-style: italic;
+  font-size: $fs-body;
+  color: $text-tertiary;
+
+  opacity: 0;
+  animation: heroSlideUp 0.5s ease 0.34s forwards;
+}
+
+// ── CTAs ──────────────────────────────────────────────────────────────────────
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-4;
+  align-items: center;
+
+  opacity: 0;
+  animation: heroSlideUp 0.5s ease 0.44s forwards;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  padding: $space-3 $space-6;
+  border-radius: $radius-md;
+  background: $accent-primary;
+  color: #fff;
+  font-family: $font-sans;
+  font-size: $fs-body;
+  font-weight: $fw-semibold;
+  text-decoration: none;
+  transition:
+    background $transition-base,
+    box-shadow $transition-base,
+    transform $transition-fast;
+
+  &:hover {
+    background: $accent-hover;
+    box-shadow: 0 0 28px rgba($accent-primary, 0.45);
+    transform: translateY(-2px);
+    color: #fff;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.btnOutline {
+  display: inline-flex;
+  align-items: center;
+  padding: $space-3 $space-6;
+  border-radius: $radius-md;
+  background: transparent;
+  color: $text-primary;
+  font-family: $font-sans;
+  font-size: $fs-body;
+  font-weight: $fw-semibold;
+  text-decoration: none;
+  border: 1px solid $border-subtle;
+  transition:
+    border-color $transition-base,
+    color $transition-base,
+    background $transition-base,
+    transform $transition-fast;
+
+  &:hover {
+    border-color: rgba($accent-primary, 0.5);
+    color: $accent-primary;
+    background: rgba($accent-primary, 0.06);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+// ── Stack badges ──────────────────────────────────────────────────────────────
+
+.stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+
+  opacity: 0;
+  animation: heroSlideUp 0.5s ease 0.54s forwards;
+}
+
+.stackBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: $space-1 $space-3;
+  border-radius: $radius-full;
+  background: rgba($accent-primary, 0.12);
+  border: 1px solid rgba($accent-primary, 0.35);
+  font-size: $fs-small;
+  font-weight: $fw-medium;
+  color: rgba($accent-primary, 0.9);
+  white-space: nowrap;
+  transition: background $transition-fast, border-color $transition-fast;
+
+  &:hover {
+    background: rgba($accent-primary, 0.2);
+    border-color: rgba($accent-primary, 0.6);
+  }
+}
+
+// ── Code panel ────────────────────────────────────────────────────────────────
+
+.panelWrapper {
+  display: none;
+
+  @include lg {
+    display: flex;
+    flex-direction: column;
+    border-radius: $radius-lg;
+    background: $bg-card;
+    border: 1px solid $border-subtle;
+    box-shadow:
+      0 4px 40px rgba(0, 0, 0, 0.5),
+      0 0 0 1px $border-subtle,
+      0 0 60px rgba($accent-primary, 0.08);
+    will-change: transform;
+    overflow: hidden;
+
+    opacity: 0;
+    animation: heroSlideUp 0.7s ease 0.3s forwards;
+  }
+}
+
+// Window chrome bar
+.panelBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-3 $space-4;
+  background: $bg-elevated;
+  border-bottom: 1px solid $border-subtle;
+}
+
+.dots {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.dotRed    { background: #FF5F57; }
+.dotYellow { background: #FEBC2E; }
+.dotGreen  { background: #28C840; }
+
+.filename {
+  font-family: $font-mono;
+  font-size: $fs-small;
+  color: $text-tertiary;
+}
+
+// Code body
+.panelBody {
+  display: flex;
+  padding: $space-4 $space-4 $space-5;
+  gap: $space-4;
+  overflow: hidden;
+}
+
+.lineNums {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  font-family: $font-mono;
+  font-size: $fs-code;
+  line-height: 1.7;
+  color: $text-tertiary;
+  user-select: none;
+  text-align: right;
+  min-width: 1.5ch;
+  flex-shrink: 0;
+}
+
+.codeArea {
+  flex: 1;
+  overflow: hidden;
+}
+
+.codeLine {
+  font-family: $font-mono;
+  font-size: $fs-code;
+  line-height: 1.7;
+  color: $text-primary;
+  white-space: pre;
+}
+
+// ── Syntax token colors ───────────────────────────────────────────────────────
+
+.kw { color: #C792EA; } // keyword   — purple
+.fn { color: #82AAFF; } // function  — blue
+.ty { color: #FFCB6B; } // type      — gold
+.cm { color: #546E7A; } // comment   — muted
+.pu { color: #89DDFF; } // punct     — cyan
+.va { color: #EAEAEA; } // variable  — white
+.pr { color: #F07178; } // property  — red-pink
+
+// ── Reduced motion ────────────────────────────────────────────────────────────
+
+@media (prefers-reduced-motion: reduce) {
+  .badge,
+  .headline,
+  .subtitle,
+  .tagline,
+  .ctas,
+  .stack,
+  .panelWrapper {
+    animation: none;
+    opacity: 1;
+  }
+
+  .badgeDot {
+    animation: none;
+  }
+}

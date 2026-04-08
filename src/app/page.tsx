@@ -1,8 +1,9 @@
+import Hero from '@/components/Hero/Hero';
+
 export default function HomePage() {
   return (
     <main>
-      <h1>Just&apos;un Dev</h1>
-      <p>Développeur Full-Stack &amp; Data Viz.</p>
+      <Hero />
     </main>
   );
 }
