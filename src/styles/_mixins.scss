@@ -1,0 +1,197 @@
+// =============================================================================
+// _mixins.scss — Helpers Just'un Dev
+// =============================================================================
+
+@use 'variables' as *;
+
+// -----------------------------------------------------------------------------
+// Breakpoints
+// -----------------------------------------------------------------------------
+
+@mixin xs {
+  @media (min-width: #{$bp-xs}) { @content; }
+}
+@mixin sm {
+  @media (min-width: #{$bp-sm}) { @content; }
+}
+@mixin md {
+  @media (min-width: #{$bp-md}) { @content; }
+}
+@mixin lg {
+  @media (min-width: #{$bp-lg}) { @content; }
+}
+@mixin xl {
+  @media (min-width: #{$bp-xl}) { @content; }
+}
+@mixin xxl {
+  @media (min-width: #{$bp-2xl}) { @content; }
+}
+
+@mixin below-md {
+  @media (max-width: #{$bp-md - 1px}) { @content; }
+}
+@mixin below-lg {
+  @media (max-width: #{$bp-lg - 1px}) { @content; }
+}
+
+// -----------------------------------------------------------------------------
+// Layout helpers
+// -----------------------------------------------------------------------------
+
+@mixin container {
+  width: 100%;
+  max-width: $container-max;
+  margin-inline: auto;
+  padding-inline: $container-px;
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin grid-auto($min: 280px, $gap: $space-6) {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(#{$min}, 1fr));
+  gap: $gap;
+}
+
+// -----------------------------------------------------------------------------
+// Typography helpers
+// -----------------------------------------------------------------------------
+
+@mixin heading-1 {
+  font-family: $font-sans;
+  font-size: $fs-h1;
+  font-weight: $fw-bold;
+  line-height: $lh-heading;
+  letter-spacing: -0.03em;
+}
+
+@mixin heading-2 {
+  font-family: $font-sans;
+  font-size: $fs-h2;
+  font-weight: $fw-bold;
+  line-height: $lh-heading;
+  letter-spacing: -0.02em;
+}
+
+@mixin heading-3 {
+  font-family: $font-sans;
+  font-size: $fs-h3;
+  font-weight: $fw-semibold;
+  line-height: 1.3;
+}
+
+@mixin text-gradient($from: $accent-primary, $to: lighten($accent-primary, 20%)) {
+  background: linear-gradient(135deg, $from, $to);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@mixin truncate {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+// -----------------------------------------------------------------------------
+// Card / Surface
+// -----------------------------------------------------------------------------
+
+@mixin card {
+  background: $bg-card;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+}
+
+@mixin card-hover {
+  transition: transform $transition-base, box-shadow $transition-base, border-color $transition-base;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-hover;
+    border-color: rgba($accent-primary, 0.3);
+  }
+}
+
+@mixin glass {
+  background: rgba($bg-elevated, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid $border-subtle;
+}
+
+// -----------------------------------------------------------------------------
+// Animation helpers
+// -----------------------------------------------------------------------------
+
+@mixin fade-in($duration: $transition-base) {
+  animation: fadeIn $duration ease forwards;
+}
+
+@mixin slide-up($duration: $transition-base) {
+  animation: slideUp $duration ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 12px $accent-glow; }
+  50%       { box-shadow: 0 0 28px $accent-glow; }
+}
+
+// -----------------------------------------------------------------------------
+// Focus / Accessibility
+// -----------------------------------------------------------------------------
+
+@mixin focus-ring {
+  outline: 2px solid $accent-primary;
+  outline-offset: 3px;
+  border-radius: $radius-sm;
+}
+
+// -----------------------------------------------------------------------------
+// Glow accent
+// -----------------------------------------------------------------------------
+
+@mixin accent-glow-border {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, $accent-primary, transparent);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity $transition-base;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+}
