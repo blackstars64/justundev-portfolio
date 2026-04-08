@@ -1,5 +1,22 @@
 import type { Metadata } from "next";
+import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import Nav from "@/components/Nav/Nav";
 import "../styles/globals.scss";
+
+const fontSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  style: ["normal", "italic"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const fontMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-mono",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Just'un Dev — Développeur Full-Stack & Data Viz",
@@ -12,8 +29,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
-      <body>{children}</body>
+    <html lang="fr" className={`${fontSans.variable} ${fontMono.variable}`}>
+      <body>
+        <Nav />
+        {children}
+      </body>
     </html>
   );
 }

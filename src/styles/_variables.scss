@@ -22,9 +22,9 @@ $status-success:  #48BB78;
 $status-warning:  #F6AD55;
 $status-error:    #E53E3E;
 
-// Typography
-$font-sans:   'Plus Jakarta Sans', system-ui, sans-serif;
-$font-mono:   'JetBrains Mono', 'Fira Code', monospace;
+// Typography — variables CSS injectées par next/font/google (layout.tsx)
+$font-sans:   var(--font-sans), system-ui, sans-serif;
+$font-mono:   var(--font-mono), 'Fira Code', monospace;
 
 $fs-h1:       4.5rem;   // 72px
 $fs-h2:       3rem;     // 48px

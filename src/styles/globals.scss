@@ -4,8 +4,8 @@
 
 @use 'variables' as *;
 
-// Google Fonts — Plus Jakarta Sans (géométrique humaniste)
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+// Fonts injectées via next/font/google dans layout.tsx
+// Les variables CSS --font-sans / --font-mono sont disponibles via <html className>
 
 // -----------------------------------------------------------------------------
 // CSS Custom Properties (runtime theme tokens)
@@ -31,8 +31,7 @@
   --status-warning:  #{$status-warning};
   --status-error:    #{$status-error};
 
-  --font-sans: #{$font-sans};
-  --font-mono: #{$font-mono};
+  // --font-sans / --font-mono injectées par next/font/google via layout.tsx
 
   --radius-sm:   #{$radius-sm};
   --radius-md:   #{$radius-md};
