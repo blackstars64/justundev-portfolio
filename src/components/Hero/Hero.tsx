@@ -93,8 +93,8 @@ export default function Hero() {
 
           {/* CTAs */}
           <div className={styles.ctas}>
-            <a href="#projets" className={styles.btnPrimary}>Voir mes projets</a>
-            <a href="#contact" className={styles.btnOutline}>Me contacter</a>
+            <a href="/projets" className={styles.btnPrimary}>Voir mes projets</a>
+            <a href="/contact" className={styles.btnOutline}>Me contacter</a>
           </div>
 
           {/* Stack badges */}

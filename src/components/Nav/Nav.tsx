@@ -5,10 +5,10 @@ import Link from 'next/link';
 import styles from './Nav.module.scss';
 
 const NAV_LINKS = [
-  { href: '/',        label: 'Home' },
-  { href: '/#projects', label: 'Projects' },
-  { href: '/#stack',  label: 'Stack' },
-  { href: '/#contact', label: 'Contact' },
+  { href: '/',          label: 'Home' },
+  { href: '/projets',   label: 'Projects' },
+  { href: '/stack',     label: 'Stack' },
+  { href: '/contact',   label: 'Contact' },
 ];
 
 export default function Nav() {
@@ -60,7 +60,7 @@ export default function Nav() {
         </nav>
 
         {/* CTA desktop */}
-        <Link href="/#projects" className={styles.cta}>
+        <Link href="/projets" className={styles.cta}>
           Voir mes projets
         </Link>
 
@@ -97,7 +97,7 @@ export default function Nav() {
             </Link>
           ))}
           <Link
-            href="/#projects"
+            href="/projets"
             className={styles.mobileCta}
             onClick={closeMenu}
             tabIndex={menuOpen ? 0 : -1}
