@@ -1,0 +1,84 @@
+// =============================================================================
+// HaloImage.module.scss — Bannière projet avec halo mouse-tracking
+// =============================================================================
+
+@use '../../styles/variables' as *;
+
+// ── Wrapper ───────────────────────────────────────────────────────────────────
+
+.wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(100% + #{$space-6} * 2);
+  margin: #{-$space-6} #{-$space-6} 0;
+  height: 160px;
+  border-radius: $radius-md $radius-md 0 0;
+  overflow: hidden;
+  border-bottom: 1px solid $border-subtle;
+  flex-shrink: 0;
+  background: #08080f;
+
+  // Halo statique bas — toujours visible, subtil
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 55% 70% at 50% 60%,
+      rgba($accent-primary, 0.18) 0%,
+      transparent 65%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+// ── Halo dynamique — suit le curseur ──────────────────────────────────────────
+
+.halo {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 65% 80% at var(--halo-x, 50%) var(--halo-y, 55%),
+    rgba($accent-primary, 0.58) 0%,
+    rgba($accent-primary, 0.16) 40%,
+    transparent 68%
+  );
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 0;
+
+  .wrapper:hover & {
+    opacity: 1;
+  }
+}
+
+// ── Image ─────────────────────────────────────────────────────────────────────
+
+.img {
+  position: relative;
+  z-index: 1;
+  width: auto;
+  height: 140px;
+  max-width: 90%;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 24px rgba($accent-primary, 0.7))
+    drop-shadow(0 0 8px rgba($accent-primary, 0.5));
+}
+
+// ── Fondu bas — raccord avec la carte ─────────────────────────────────────────
+
+.fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: linear-gradient(to bottom, transparent, #08080f);
+  pointer-events: none;
+  z-index: 2;
+}

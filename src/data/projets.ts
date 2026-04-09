@@ -13,6 +13,7 @@ export interface Projet {
   tagline:     string;
   stack:       string[];
   statut:      'En ligne' | 'En dev' | 'Archivé';
+  image?:      string;
   lienDemo?:   string;
   lienRepo?:   string;
   sections:    ProjetSection[];
@@ -25,6 +26,7 @@ export const projets: Projet[] = [
     tagline: "Jeu de cartes roguelite desktop — battissez votre deck, affrontez les épreuves.",
     stack:   ['Tauri', 'React', 'TypeScript', 'SQLite', 'Rust'],
     statut:  'En dev',
+    image:   '/projets/gardiens-arcana.png',
     lienDemo: undefined,
     lienRepo: undefined,
 
@@ -57,6 +59,7 @@ export const projets: Projet[] = [
     tagline: 'E-commerce vêtements neuf & occasion — headless Medusa v2, Stripe, Sendcloud, emails transactionnels.',
     stack:   ['TypeScript', 'Next.js 14', 'Medusa v2', 'PostgreSQL', 'Redis', 'Stripe', 'Sendcloud', 'Cloudinary', 'Resend'],
     statut:  'En dev',
+    image:   '/projets/caskshop.png',
     lienDemo: undefined,
     lienRepo: undefined,
 
@@ -99,6 +102,39 @@ export const projets: Projet[] = [
       {
         titre:   'Ce que ça m\'a appris',
         contenu: "C'est avec DigiGame que j'ai vraiment compris ce que signifie construire une application de bout en bout. Connecter un frontend React à une API Express, sécuriser des routes avec JWT, modéliser une base MySQL, écrire des migrations — tout ça en équipe et sous contrainte de temps. Ce projet m'a aussi appris que le code d'examen a ses limites : depuis, j'ai progressé sur la qualité du code, l'architecture, les tests et les outils (TypeScript, Docker avancé, Tauri…). DigiGame reste l'artefact honnête du début du parcours.",
+      },
+    ],
+  },
+  {
+    slug:    'blackdesk',
+    titre:   'BlackDesk',
+    tagline: 'OS freelance local-first — planning, projets, facturation et Insight Engine IA intégré.',
+    stack:   ['Tauri 2', 'Next.js 15', 'TypeScript', 'SCSS', 'SQLite', 'D3.js', 'Claude API', 'Resend'],
+    statut:  'En dev',
+    image:   '/projets/blackdesk.png',
+    lienDemo: undefined,
+    lienRepo: undefined,
+
+    sections: [
+      {
+        titre:   'Contexte',
+        contenu: "BlackDesk est un système d'exécution et de décision conçu pour les développeurs freelances. L'idée centrale : ne plus se demander quoi faire. L'outil agrège planning, projets, tâches, clients et données business dans une application desktop native (Tauri 2), analyse le tout en local et produit en permanence une Next Best Action — la chose la plus importante à faire maintenant. Objectif à moyen terme : transformer la version personnelle en SaaS pour freelances FR.",
+      },
+      {
+        titre:   'Problème résolu',
+        contenu: "Un freelance jongle en permanence entre plusieurs contextes : missions client, admin, prospection, contenu. Les outils classiques (Notion, Trello, Excel) stockent l'information mais n'aident pas à décider. BlackDesk résout ça avec un Insight Engine local : scoring des tâches (impact × 0.4 + urgence × 0.4 + risque × 0.2), détection automatique des problèmes (projet inactif, dépendance client, surcharge) et génération de recommandations actionnables — sans cloud, sans abonnement, sans latence.",
+      },
+      {
+        titre:   'Architecture',
+        contenu: "Application desktop Tauri 2 : backend Rust léger + frontend Next.js 15 (App Router) packagé en natif. Persistance locale avec SQLite + better-sqlite3 — toutes les données restent sur la machine. L'Insight Engine tourne entièrement en local (5 analyzers : tâches, projets, business, temps/énergie, comportement). Claude API intervient uniquement pour le briefing matin et l'assistant IA — avec support BYOK (clé utilisateur chiffrée localement, coût zéro pour le produit). Dashboard D3.js pour les courbes CA/dépenses/bénéfice. Resend pour l'envoi automatique des factures PDF.",
+      },
+      {
+        titre:   'Modules',
+        contenu: "V1 : Daily Control Panel (NBA + score du jour + alertes), Planning semaine/mois (5 catégories colorées), Projets (fiches + % avancement + tâches liées), Quick Capture (ajout rapide accessible partout). V2 : Clients, Devis, Factures PDF auto (react-pdf + mentions légales FR), Dépenses avec OCR. V3 : Dashboard D3.js (CA, dépenses, bénéfice), IA Claude (briefing matin + assistant), BYOK settings (provider, modèle, clé chiffrée). V4 : automatisations Stripe/GitHub/URSSAF. V5 : SaaS multi-tenant, plans Free/Medium/Pro.",
+      },
+      {
+        titre:   'Statut',
+        contenu: "Projet en conception active — architecture et spécifications finalisées, phases planifiées jusqu'en 2027. Phase 0 (fondations : repo, DB, auth, Tauri) prévue pour juillet 2026. Le design s'appuie sur un logo 3D animé (gradient violet→bleu→argent) et un dashboard dark mode aux cards sombres avec halos violets.",
       },
     ],
   },

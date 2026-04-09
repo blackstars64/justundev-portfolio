@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { projets } from '@/data/projets';
+import HaloImage from '@/components/HaloImage/HaloImage';
 import styles from './projets.module.scss';
 
 export const metadata: Metadata = {
@@ -27,6 +28,9 @@ export default function ProjetsPage() {
             {projets.map((projet) => (
               <li key={projet.slug}>
                 <Link href={`/projets/${projet.slug}`} className={styles.card}>
+                  {projet.image && (
+                    <HaloImage src={projet.image} alt={`Logo ${projet.titre}`} />
+                  )}
                   <div className={styles.cardTop}>
                     <span className={`${styles.statut} ${styles[`statut_${projet.statut.replace(' ', '_')}`]}`}>
                       {projet.statut}
