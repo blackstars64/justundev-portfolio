@@ -63,11 +63,11 @@ export const projets: Projet[] = [
     sections: [
       {
         titre:   'Contexte',
-        contenu: '[PLACEHOLDER] Décrire le contexte du projet CaskShop : client, objectif, marché ciblé (ex. cavistes indépendants, collectionneurs de whisky…).',
+        contenu: "Projet personnel développé pour ma mère, qui vend des articles neufs et d'occasion — vêtements, objets, jeux enfants. L'objectif : lui offrir une vitrine e-commerce sur-mesure plutôt que de dépendre de plateformes génériques comme Vinted ou Leboncoin.",
       },
       {
         titre:   'Problème',
-        contenu: '[PLACEHOLDER] Quel problème concret le projet résout-il ? Ex. : les clients peinent à trouver un spiritueux adapté à leurs goûts parmi un catalogue de 500+ références.',
+        contenu: "Les plateformes existantes imposent leurs règles, leurs commissions et leur mise en page. Il fallait une solution indépendante : catalogue personnalisé, descriptions produit générées automatiquement par IA pour gagner du temps, et emails transactionnels intégrés.",
       },
       {
         titre:   'Solution',
@@ -78,8 +78,8 @@ export const projets: Projet[] = [
         contenu: 'Next.js (frontend + SSR) · Node.js (services custom) · MySQL sur port 5433 · Medusa v2 (catalogue, panier, commandes) · Resend (emails transactionnels) · Groq API avec llama-3.1-8b (génération de descriptions SEO et recommandations produit).',
       },
       {
-        titre:   'Résultats',
-        contenu: '[PLACEHOLDER] Ajouter des métriques ou résultats mesurables : ex. temps de génération des descriptions produit, taux de conversion, nombre de SKU gérés, retours client…',
+        titre:   'Statut',
+        contenu: "Projet en développement actif. Le moteur de recommandations IA et les emails transactionnels sont fonctionnels. La plateforme est utilisée en interne — mise en ligne publique prévue après finalisation du catalogue et des tests de charge.",
       },
     ],
   },
