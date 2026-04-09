@@ -1,0 +1,334 @@
+// =============================================================================
+// projet.module.scss — Page détail projet
+// =============================================================================
+
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+// ── Keyframes ─────────────────────────────────────────────────────────────────
+
+@keyframes projetSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── Page wrapper ──────────────────────────────────────────────────────────────
+
+.page {
+  position: relative;
+  background: $bg-primary;
+  min-height: 100svh;
+  overflow: hidden;
+}
+
+// ── Shared inner container ────────────────────────────────────────────────────
+
+.inner {
+  @include container;
+  position: relative;
+  z-index: 1;
+}
+
+// ── Background glow ───────────────────────────────────────────────────────────
+
+.glowTop {
+  position: absolute;
+  top: -15%;
+  right: -8%;
+  width: 640px;
+  height: 640px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba($accent-primary, 0.2) 0%,
+    rgba($accent-primary, 0.06) 45%,
+    transparent 70%
+  );
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+// ── Hero ──────────────────────────────────────────────────────────────────────
+
+.hero {
+  padding-top: $space-24;
+  padding-bottom: $space-16;
+  border-bottom: 1px solid $border-subtle;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  font-size: $fs-small;
+  font-weight: $fw-medium;
+  color: $text-tertiary;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  margin-bottom: $space-12;
+  transition: color $transition-base;
+
+  opacity: 0;
+  animation: projetSlideUp 0.5s ease 0.0s forwards;
+
+  &:hover {
+    color: $accent-primary;
+  }
+}
+
+.heroContent {
+  @include flex-col;
+  gap: $space-6;
+  max-width: 780px;
+}
+
+// ── Statut badge ──────────────────────────────────────────────────────────────
+
+.statut {
+  display: inline-flex;
+  align-items: center;
+  padding: $space-1 $space-3;
+  border-radius: $radius-full;
+  font-size: $fs-small;
+  font-weight: $fw-medium;
+  width: fit-content;
+
+  opacity: 0;
+  animation: projetSlideUp 0.5s ease 0.05s forwards;
+}
+
+.statut_En_ligne {
+  background: rgba($status-success, 0.1);
+  border: 1px solid rgba($status-success, 0.3);
+  color: $status-success;
+}
+
+.statut_En_dev {
+  background: rgba($status-warning, 0.1);
+  border: 1px solid rgba($status-warning, 0.3);
+  color: $status-warning;
+}
+
+// stylelint-disable-next-line selector-class-pattern
+.statut_Archivé {
+  background: rgba($text-tertiary, 0.1);
+  border: 1px solid rgba($text-tertiary, 0.3);
+  color: $text-tertiary;
+}
+
+// ── Hero text ─────────────────────────────────────────────────────────────────
+
+.titre {
+  font-family: $font-sans;
+  font-size: clamp(2.5rem, 6vw, $fs-h1);
+  font-weight: $fw-bold;
+  line-height: $lh-heading;
+  letter-spacing: -0.03em;
+  color: $text-primary;
+
+  opacity: 0;
+  animation: projetSlideUp 0.6s ease 0.1s forwards;
+}
+
+.tagline {
+  font-size: $fs-body-lg;
+  color: $text-secondary;
+  line-height: $lh-body;
+
+  opacity: 0;
+  animation: projetSlideUp 0.5s ease 0.18s forwards;
+}
+
+// ── Stack badges ──────────────────────────────────────────────────────────────
+
+.stackList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  opacity: 0;
+  animation: projetSlideUp 0.5s ease 0.26s forwards;
+}
+
+.stackBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: $space-1 $space-3;
+  border-radius: $radius-full;
+  background: rgba($accent-primary, 0.12);
+  border: 1px solid rgba($accent-primary, 0.35);
+  font-size: $fs-small;
+  font-weight: $fw-medium;
+  color: rgba($accent-primary, 0.9);
+  white-space: nowrap;
+}
+
+// ── Links ─────────────────────────────────────────────────────────────────────
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-4;
+  align-items: center;
+
+  opacity: 0;
+  animation: projetSlideUp 0.5s ease 0.34s forwards;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  padding: $space-3 $space-6;
+  border-radius: $radius-md;
+  background: $accent-primary;
+  color: #fff;
+  font-family: $font-sans;
+  font-size: $fs-body;
+  font-weight: $fw-semibold;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition:
+    background $transition-base,
+    box-shadow $transition-base,
+    transform $transition-fast;
+
+  &:hover {
+    background: $accent-hover;
+    box-shadow: 0 0 28px rgba($accent-primary, 0.45);
+    transform: translateY(-2px);
+    color: #fff;
+  }
+
+  &:active { transform: translateY(0); }
+  &:focus-visible { @include focus-ring; }
+}
+
+.btnOutline {
+  display: inline-flex;
+  align-items: center;
+  padding: $space-3 $space-6;
+  border-radius: $radius-md;
+  background: transparent;
+  color: $text-primary;
+  font-family: $font-sans;
+  font-size: $fs-body;
+  font-weight: $fw-semibold;
+  text-decoration: none;
+  border: 1px solid $border-subtle;
+  cursor: pointer;
+  transition:
+    border-color $transition-base,
+    color $transition-base,
+    background $transition-base,
+    transform $transition-fast;
+
+  &:hover {
+    border-color: rgba($accent-primary, 0.5);
+    color: $accent-primary;
+    background: rgba($accent-primary, 0.06);
+    transform: translateY(-2px);
+  }
+
+  &:active { transform: translateY(0); }
+  &:focus-visible { @include focus-ring; }
+}
+
+// ── Content sections ──────────────────────────────────────────────────────────
+
+.content {
+  padding-top: $space-16;
+  padding-bottom: $space-16;
+}
+
+.section {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $space-4;
+  padding-bottom: $space-12;
+  border-bottom: 1px solid $border-separator;
+
+  &:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  @include md {
+    grid-template-columns: 80px 1fr;
+    gap: $space-8;
+    align-items: start;
+  }
+}
+
+.sectionNumber {
+  font-family: $font-mono;
+  font-size: $fs-small;
+  color: $accent-primary;
+  opacity: 0.6;
+  letter-spacing: 0.06em;
+  padding-top: 0.3rem; // align with heading cap-height
+}
+
+.sectionBody {
+  @include flex-col;
+  gap: $space-4;
+}
+
+.sectionTitre {
+  font-family: $font-sans;
+  font-size: $fs-h3;
+  font-weight: $fw-semibold;
+  color: $text-primary;
+  line-height: 1.2;
+}
+
+.sectionContenu {
+  font-size: $fs-body-lg;
+  color: $text-secondary;
+  line-height: $lh-body;
+  max-width: 72ch;
+}
+
+// Placeholder style — indique clairement que c'est à remplir
+.placeholder {
+  color: $text-tertiary;
+  font-style: italic;
+  border-left: 3px solid rgba($accent-primary, 0.3);
+  padding-left: $space-4;
+  background: rgba($accent-primary, 0.03);
+  border-radius: 0 $radius-sm $radius-sm 0;
+  padding-block: $space-3;
+}
+
+// ── Footer nav ────────────────────────────────────────────────────────────────
+
+.footerNav {
+  padding-bottom: $space-24;
+
+  .inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-4;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: $space-8;
+    border-top: 1px solid $border-subtle;
+  }
+}
+
+// ── Reduced motion ────────────────────────────────────────────────────────────
+
+@media (prefers-reduced-motion: reduce) {
+  .back,
+  .statut,
+  .titre,
+  .tagline,
+  .stackList,
+  .links {
+    animation: none;
+    opacity: 1;
+  }
+}
