@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import styles from './Hero.module.scss';
 
 // ── Stack badges ──────────────────────────────────────────────────────────────
-const STACK = ['TypeScript', 'React', 'Next.js', 'Node.js', 'D3.js', 'PostgreSQL', 'SCSS', 'Tauri'];
+const STACK = ['TypeScript', 'React', 'Next.js', 'Node.js', 'D3.js', 'MySQL', 'SCSS', 'Tauri'];
 
 // ── Syntax token types ────────────────────────────────────────────────────────
 type TK = 'kw' | 'fn' | 'ty' | 'cm' | 'pu' | 'va' | 'pr';
