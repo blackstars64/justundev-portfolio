@@ -1,0 +1,422 @@
+@use 'variables' as *;
+
+// =============================================================================
+// dataviz.scss — Page /dataviz
+// =============================================================================
+
+// ── Layout page ──────────────────────────────────────────────────────────────
+
+.dataviz-page {
+  min-height: 100vh;
+  padding: $space-16 $space-6 $space-24;
+  max-width: $container-max;
+  margin: 0 auto;
+
+  @media (max-width: $bp-md) {
+    padding: $space-12 $space-4 $space-16;
+  }
+}
+
+.dataviz-header {
+  margin-bottom: $space-16;
+
+  .dataviz-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    font-family: $font-mono;
+    font-size: $fs-small;
+    color: $accent-primary;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: $space-4;
+
+    &::before {
+      content: '//';
+      opacity: 0.6;
+    }
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, $fs-h2);
+    font-weight: $fw-bold;
+    color: $text-primary;
+    line-height: $lh-heading;
+    margin: 0 0 $space-4;
+  }
+
+  p {
+    color: $text-secondary;
+    font-size: $fs-body-lg;
+    max-width: 560px;
+    line-height: $lh-body;
+    margin: 0;
+  }
+}
+
+// ── Sections démo ────────────────────────────────────────────────────────────
+
+.demo-section {
+  margin-bottom: $space-16;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  background: $bg-card;
+  transition: border-color $transition-base;
+
+  &:hover {
+    border-color: rgba(139, 92, 246, 0.2);
+  }
+}
+
+.demo-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $space-6;
+  padding: $space-8;
+  border-bottom: 1px solid $border-separator;
+
+  @media (max-width: $bp-sm) {
+    flex-direction: column;
+  }
+}
+
+.demo-meta {
+  .demo-number {
+    font-family: $font-mono;
+    font-size: $fs-small;
+    color: $accent-primary;
+    opacity: 0.7;
+    margin-bottom: $space-1;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: $fw-semibold;
+    color: $text-primary;
+    margin: 0 0 $space-2;
+  }
+
+  p {
+    font-size: $fs-small;
+    color: $text-secondary;
+    margin: 0;
+    line-height: $lh-body;
+  }
+}
+
+.demo-tech-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: $radius-full;
+  font-family: $font-mono;
+  font-size: 0.75rem;
+  color: $accent-primary;
+
+  &::before {
+    content: '⬡';
+    font-size: 0.65rem;
+  }
+}
+
+.demo-body {
+  padding: $space-8;
+
+  @media (max-width: $bp-sm) {
+    padding: $space-6 $space-4;
+  }
+}
+
+// ── Source code toggle ────────────────────────────────────────────────────────
+
+.source-toggle {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-3 $space-8;
+  border-top: 1px solid $border-separator;
+  background: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  font-family: $font-mono;
+  font-size: $fs-small;
+  color: $text-secondary;
+  transition: color $transition-fast;
+  width: 100%;
+  border: none;
+  border-top: 1px solid $border-separator;
+  text-align: left;
+
+  &:hover {
+    color: $accent-primary;
+  }
+
+  .toggle-icon {
+    display: inline-block;
+    transition: transform $transition-base;
+    &.open { transform: rotate(90deg); }
+  }
+
+  .source-toggle-file {
+    font-family: $font-mono;
+    font-size: 0.75rem;
+    color: $accent-primary;
+    opacity: 0.7;
+  }
+}
+
+.source-code-block {
+  border-top: 1px solid $border-separator;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.4s ease;
+
+  &.visible {
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  pre {
+    margin: 0;
+    padding: $space-6 $space-8;
+    font-family: $font-mono;
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: $text-secondary;
+    background: rgba(0, 0, 0, 0.3);
+    white-space: pre;
+    overflow-x: auto;
+
+    @media (max-width: $bp-sm) {
+      padding: $space-4;
+      font-size: 0.75rem;
+    }
+  }
+
+  // Syntax highlight basique
+  .kw  { color: #C792EA; }
+  .fn  { color: #82AAFF; }
+  .str { color: #C3E88D; }
+  .num { color: #F78C6C; }
+  .cmt { color: rgba(234,234,234,0.35); font-style: italic; }
+}
+
+// ── Analytics Dashboard ───────────────────────────────────────────────────────
+
+.analytics-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+}
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $space-4;
+
+  @media (max-width: $bp-md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: $bp-xs) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.kpi-card {
+  background: $bg-elevated;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-lg;
+  padding: $space-5 $space-6;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    border-color: rgba(139, 92, 246, 0.3);
+    box-shadow: $shadow-hover;
+  }
+}
+
+.kpi-label {
+  font-size: $fs-small;
+  color: $text-secondary;
+  font-weight: $fw-medium;
+}
+
+.kpi-value {
+  font-size: 1.5rem;
+  font-weight: $fw-bold;
+  color: $text-primary;
+  font-variant-numeric: tabular-nums;
+
+  @media (max-width: $bp-xs) {
+    font-size: 1.2rem;
+  }
+
+  &.accent {
+    color: $accent-primary;
+  }
+}
+
+.period-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.period-btn {
+  padding: $space-2 $space-4;
+  border-radius: $radius-full;
+  border: 1px solid $border-subtle;
+  background: transparent;
+  color: $text-secondary;
+  font-size: $fs-small;
+  font-family: $font-mono;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    border-color: $accent-primary;
+    color: $text-primary;
+  }
+
+  &.active {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: $accent-primary;
+    color: $accent-primary;
+    font-weight: $fw-semibold;
+  }
+}
+
+.chart-block {
+  background: $bg-elevated;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-lg;
+  padding: $space-5 $space-6;
+}
+
+.chart-title {
+  font-size: 0.875rem;
+  font-weight: $fw-semibold;
+  color: $text-secondary;
+  margin: 0 0 $space-4;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-family: $font-mono;
+}
+
+.chart-wrap {
+  position: relative;
+}
+
+// ── Network Graph ─────────────────────────────────────────────────────────────
+
+.network-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $space-3 $space-5;
+  margin-bottom: $space-5;
+  font-family: $font-mono;
+  font-size: 0.75rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  color: $text-secondary;
+  text-transform: capitalize;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: $radius-full;
+  flex-shrink: 0;
+}
+
+.legend-hint {
+  margin-left: auto;
+  color: $text-tertiary;
+  font-size: 0.7rem;
+
+  @media (max-width: $bp-sm) {
+    display: none;
+  }
+}
+
+// ── Choropleth Map ────────────────────────────────────────────────────────────
+
+.choropleth-legend {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  margin-bottom: $space-5;
+  font-family: $font-mono;
+  font-size: 0.75rem;
+}
+
+.legend-label {
+  color: $text-secondary;
+  white-space: nowrap;
+}
+
+.legend-gradient {
+  width: 140px;
+  height: 10px;
+  border-radius: $radius-full;
+  background: linear-gradient(
+    to right,
+    rgba(139, 92, 246, 0.08),
+    rgba(139, 92, 246, 0.95)
+  );
+  border: 1px solid $border-subtle;
+  flex-shrink: 0;
+}
+
+.legend-unit {
+  color: $text-tertiary;
+  font-size: 0.7rem;
+  margin-left: $space-2;
+
+  @media (max-width: $bp-sm) {
+    display: none;
+  }
+}
+
+// ── Tooltip D3 ────────────────────────────────────────────────────────────────
+
+.d3-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: $bg-elevated;
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  border-radius: $radius-md;
+  padding: $space-3 $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  font-size: $fs-small;
+  color: $text-primary;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+  white-space: nowrap;
+
+  strong {
+    font-weight: $fw-semibold;
+    color: $accent-primary;
+    margin-bottom: $space-1;
+  }
+
+  span {
+    color: $text-secondary;
+  }
+}

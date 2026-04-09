@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={`${fontSans.variable} ${fontMono.variable}`}>
+    <html lang="fr" className={`${fontSans.variable} ${fontMono.variable}`} data-scroll-behavior="smooth">
       <body>
         <Nav />
         {children}

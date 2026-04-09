@@ -54,32 +54,24 @@ export const projets: Projet[] = [
   {
     slug:    'caskshop',
     titre:   'CaskShop',
-    tagline: 'E-commerce de spiritueux avec moteur de recommandations IA',
-    stack:   ['Next.js', 'Node.js', 'MySQL', 'Medusa v2', 'Resend', 'Groq llama-3.1-8b'],
+    tagline: 'E-commerce vêtements neuf & occasion — headless Medusa v2, Stripe, Sendcloud, emails transactionnels.',
+    stack:   ['TypeScript', 'Next.js 14', 'Medusa v2', 'PostgreSQL', 'Redis', 'Stripe', 'Sendcloud', 'Cloudinary', 'Resend'],
     statut:  'En dev',
-    lienDemo: undefined,  // [PLACEHOLDER] ajouter URL démo quand disponible
-    lienRepo: undefined,  // [PLACEHOLDER] ajouter URL repo si public
+    lienDemo: undefined,
+    lienRepo: undefined,
 
     sections: [
       {
         titre:   'Contexte',
-        contenu: "Projet personnel développé pour ma mère, qui vend des articles neufs et d'occasion — vêtements, objets, jeux enfants. L'objectif : lui offrir une vitrine e-commerce sur-mesure plutôt que de dépendre de plateformes génériques comme Vinted ou Leboncoin.",
+        contenu: "CaskShop est un e-commerce full-stack dédié à la vente de vêtements (neuf & occasion), objets et jeux pour enfants, développé en autonomie complète. L'objectif : construire une boutique souveraine — sans dépendance à Shopify ou WooCommerce — avec un catalogue maîtrisé, un tunnel de paiement intégré et une gestion des expéditions directement connectée au transporteur. Le projet est structuré en monorepo Turborepo (storefront, admin, backend) et déployé en production sur VPS Hetzner.",
       },
       {
         titre:   'Problème',
-        contenu: "Les plateformes existantes imposent leurs règles, leurs commissions et leur mise en page. Il fallait une solution indépendante : catalogue personnalisé, descriptions produit générées automatiquement par IA pour gagner du temps, et emails transactionnels intégrés.",
+        contenu: "Les solutions e-commerce packagées imposent leurs contraintes : commissions, limites d'extension, architecture fermée. L'enjeu était de construire une plateforme headless complète : découpler le storefront Next.js 14 du backend commerce (Medusa v2), intégrer Stripe pour le paiement sécurisé, Sendcloud pour les flux d'expédition et Resend pour les emails transactionnels (confirmation, expédition, remboursement) — le tout en TypeScript strict.",
       },
       {
-        titre:   'Solution',
-        contenu: 'Plateforme e-commerce fullstack construite sur Medusa v2 (headless commerce) avec un moteur de recommandations piloté par Groq llama-3.1-8b. Les emails transactionnels sont gérés via Resend. Le frontend Next.js consomme les APIs Medusa et expose une interface de recherche enrichie.',
-      },
-      {
-        titre:   'Stack technique',
-        contenu: 'Next.js (frontend + SSR) · Node.js (services custom) · MySQL sur port 5433 · Medusa v2 (catalogue, panier, commandes) · Resend (emails transactionnels) · Groq API avec llama-3.1-8b (génération de descriptions SEO et recommandations produit).',
-      },
-      {
-        titre:   'Statut',
-        contenu: "Projet en développement actif. Le moteur de recommandations IA et les emails transactionnels sont fonctionnels. La plateforme est utilisée en interne — mise en ligne publique prévue après finalisation du catalogue et des tests de charge.",
+        titre:   'Résultats',
+        contenu: "Architecture headless opérationnelle : Medusa v2 gère catalogue, panier et commandes via API REST ; Next.js 14 consomme les endpoints côté storefront. Paiement Stripe intégré avec webhooks (confirmation commande, remboursement). Expédition automatisée via Sendcloud : génération d'étiquettes, numéro de suivi injecté dans l'email client. Emails transactionnels Resend sur trois événements : commande placée, colis expédié, remboursement. Images produits hébergées sur Cloudinary. CI/CD GitHub Actions avec environnement preprod sur Railway.",
       },
     ],
   },
