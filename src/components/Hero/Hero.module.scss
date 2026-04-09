@@ -69,13 +69,14 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: $space-12;
-  padding-top: $space-8;
+  padding-top: calc(#{$space-8} + 64px); // 64px = hauteur nav mobile
   padding-bottom: $space-20;
   align-items: center;
 
   @include lg {
     grid-template-columns: 5fr 4fr;
     gap: $space-16;
+    padding-top: $space-20;
   }
 }
 
