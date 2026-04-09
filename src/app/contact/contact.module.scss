@@ -1,0 +1,314 @@
+// =============================================================================
+// contact.module.scss
+// =============================================================================
+
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+// ── Keyframes ─────────────────────────────────────────────────────────────────
+
+@keyframes contactSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ── Section ───────────────────────────────────────────────────────────────────
+
+.section {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  background: $bg-primary;
+  overflow: hidden;
+}
+
+// ── Background glow ───────────────────────────────────────────────────────────
+
+.glow {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 560px;
+  height: 560px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba($accent-primary, 0.18) 0%,
+    rgba($accent-primary, 0.05) 45%,
+    transparent 70%
+  );
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+// ── Inner ─────────────────────────────────────────────────────────────────────
+
+.inner {
+  @include container;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $space-16;
+  padding-top: $space-24;
+  padding-bottom: $space-24;
+
+  @include lg {
+    grid-template-columns: 5fr 7fr;
+    align-items: start;
+  }
+}
+
+// ── Left — info ───────────────────────────────────────────────────────────────
+
+.info {
+  @include flex-col;
+  gap: $space-6;
+
+  opacity: 0;
+  animation: contactSlideUp 0.6s ease 0.05s forwards;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  font-family: $font-mono;
+  font-size: $fs-small;
+  color: $accent-primary;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.title {
+  font-family: $font-sans;
+  font-size: clamp(2rem, 4vw, $fs-h2);
+  font-weight: $fw-bold;
+  line-height: $lh-heading;
+  letter-spacing: -0.02em;
+  color: $text-primary;
+}
+
+.desc {
+  font-size: $fs-body-lg;
+  color: $text-secondary;
+  line-height: $lh-body;
+  max-width: 44ch;
+}
+
+.meta {
+  @include flex-col;
+  gap: $space-3;
+  padding-top: $space-4;
+  border-top: 1px solid $border-subtle;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  font-size: $fs-body;
+  color: $text-secondary;
+
+  strong {
+    color: $text-primary;
+    font-weight: $fw-medium;
+  }
+}
+
+// ── Right — form card ─────────────────────────────────────────────────────────
+
+.card {
+  @include card;
+  padding: $space-8;
+
+  opacity: 0;
+  animation: contactSlideUp 0.6s ease 0.15s forwards;
+}
+
+// ── Form ──────────────────────────────────────────────────────────────────────
+
+.form {
+  @include flex-col;
+  gap: $space-5;
+}
+
+.field {
+  @include flex-col;
+  gap: $space-2;
+}
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $space-5;
+
+  @include sm {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.fieldLabelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-2;
+}
+
+.fieldLabel {
+  font-size: $fs-small;
+  font-weight: $fw-medium;
+  color: $text-secondary;
+  letter-spacing: 0.02em;
+}
+
+.charCount {
+  font-size: $fs-small;
+  font-family: $font-mono;
+  color: $text-tertiary;
+  transition: color $transition-base;
+
+  &.charCountOk {
+    color: $status-success;
+  }
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: $space-3 $space-4;
+  background: $bg-elevated;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-md;
+  color: $text-primary;
+  font-family: $font-sans;
+  font-size: $fs-body;
+  line-height: $lh-body;
+  transition:
+    border-color $transition-base,
+    box-shadow $transition-base;
+  outline: none;
+
+  &::placeholder {
+    color: $text-tertiary;
+  }
+
+  &:focus {
+    border-color: rgba($accent-primary, 0.6);
+    box-shadow: 0 0 0 3px rgba($accent-primary, 0.12);
+  }
+
+  &.inputError {
+    border-color: rgba($status-error, 0.6);
+    box-shadow: 0 0 0 3px rgba($status-error, 0.1);
+  }
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 140px;
+}
+
+.fieldError {
+  font-size: $fs-small;
+  color: $status-error;
+}
+
+// ── Submit button ─────────────────────────────────────────────────────────────
+
+.submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  padding: $space-4 $space-8;
+  border-radius: $radius-md;
+  background: $accent-primary;
+  color: #fff;
+  font-family: $font-sans;
+  font-size: $fs-body;
+  font-weight: $fw-semibold;
+  border: none;
+  cursor: pointer;
+  transition:
+    background $transition-base,
+    box-shadow $transition-base,
+    transform $transition-fast;
+  align-self: flex-start;
+
+  &:hover:not(:disabled) {
+    background: $accent-hover;
+    box-shadow: 0 0 28px rgba($accent-primary, 0.45);
+    transform: translateY(-2px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(#fff, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+// ── Feedback banners ──────────────────────────────────────────────────────────
+
+.feedbackSuccess {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  padding: $space-4;
+  border-radius: $radius-md;
+  background: rgba($status-success, 0.08);
+  border: 1px solid rgba($status-success, 0.25);
+  font-size: $fs-body;
+  color: $status-success;
+  line-height: $lh-body;
+}
+
+.feedbackError {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  padding: $space-4;
+  border-radius: $radius-md;
+  background: rgba($status-error, 0.08);
+  border: 1px solid rgba($status-error, 0.25);
+  font-size: $fs-body;
+  color: $status-error;
+  line-height: $lh-body;
+}
+
+// ── Reduced motion ────────────────────────────────────────────────────────────
+
+@media (prefers-reduced-motion: reduce) {
+  .info,
+  .card {
+    animation: none;
+    opacity: 1;
+  }
+
+  .spinner {
+    animation: none;
+  }
+}

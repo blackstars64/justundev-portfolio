@@ -1,0 +1,202 @@
+// =============================================================================
+// EasterEgg.module.scss — blackstars hidden layer
+// =============================================================================
+
+@use '../../styles/variables' as *;
+
+// ── Keyframes ─────────────────────────────────────────────────────────────────
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes terminalIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+// Glitch slices — pseudo-elements scrub through random clip regions
+@keyframes glitchBefore {
+  0%   { clip-path: inset(0    0 98%  0); transform: translateX(0); }
+  10%  { clip-path: inset(15%  0 60%  0); transform: translateX(-4px); }
+  20%  { clip-path: inset(55%  0 12%  0); transform: translateX(4px); }
+  30%  { clip-path: inset(30%  0 45%  0); transform: translateX(-2px); }
+  40%  { clip-path: inset(75%  0 8%   0); transform: translateX(3px); }
+  50%  { clip-path: inset(8%   0 72%  0); transform: translateX(0); }
+  60%  { clip-path: inset(45%  0 38%  0); transform: translateX(-3px); }
+  70%  { clip-path: inset(68%  0 18%  0); transform: translateX(2px); }
+  80%  { clip-path: inset(38%  0 50%  0); transform: translateX(0); }
+  90%  { clip-path: inset(2%   0 85%  0); transform: translateX(-2px); }
+  100% { clip-path: inset(0    0 0    0); transform: translateX(0); }
+}
+
+@keyframes glitchAfter {
+  0%   { clip-path: inset(95%  0 0    0); transform: translateX(0); }
+  10%  { clip-path: inset(62%  0 28%  0); transform: translateX(3px); }
+  20%  { clip-path: inset(18%  0 65%  0); transform: translateX(-3px); }
+  30%  { clip-path: inset(82%  0 5%   0); transform: translateX(2px); }
+  40%  { clip-path: inset(5%   0 85%  0); transform: translateX(-4px); }
+  50%  { clip-path: inset(48%  0 30%  0); transform: translateX(0); }
+  60%  { clip-path: inset(22%  0 58%  0); transform: translateX(4px); }
+  70%  { clip-path: inset(90%  0 2%   0); transform: translateX(-2px); }
+  80%  { clip-path: inset(12%  0 78%  0); transform: translateX(1px); }
+  90%  { clip-path: inset(55%  0 35%  0); transform: translateX(-1px); }
+  100% { clip-path: inset(0    0 0    0); transform: translateX(0); }
+}
+
+// ── Overlay ───────────────────────────────────────────────────────────────────
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 10, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  cursor: pointer;
+  animation: overlayIn 0.35s ease forwards;
+}
+
+// ── Canvas matrix rain ────────────────────────────────────────────────────────
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+// ── Terminal window ───────────────────────────────────────────────────────────
+
+.terminal {
+  position: relative;
+  z-index: 1;
+  width: min(540px, calc(100vw - 2rem));
+  border-radius: $radius-lg;
+  background: $bg-card;
+  border: 1px solid rgba($accent-primary, 0.45);
+  box-shadow:
+    0 0 0 1px rgba($accent-primary, 0.12),
+    0 0 80px rgba($accent-primary, 0.22),
+    0 32px 80px rgba(0, 0, 0, 0.85);
+  cursor: default;
+  overflow: hidden;
+  animation: terminalIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+}
+
+// ── Window chrome bar ─────────────────────────────────────────────────────────
+
+.termBar {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-3 $space-5;
+  background: $bg-elevated;
+  border-bottom: 1px solid rgba($accent-primary, 0.2);
+}
+
+.termDots {
+  display: flex;
+  gap: $space-2;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba($accent-primary, 0.45);
+}
+
+.termTitle {
+  font-family: $font-mono;
+  font-size: $fs-small;
+  color: rgba($accent-primary, 0.65);
+  letter-spacing: 0.08em;
+}
+
+// ── Terminal body ─────────────────────────────────────────────────────────────
+
+.termBody {
+  padding: $space-6 $space-6 $space-8;
+  font-family: $font-mono;
+  font-size: $fs-code;
+  line-height: 1.9;
+  color: rgba($accent-primary, 0.85);
+}
+
+// ── Lines ─────────────────────────────────────────────────────────────────────
+
+.line {
+  min-height: 1.9em;
+  white-space: pre;
+  position: relative;
+}
+
+// Glitch — applied only when the line is fully typed
+.glitch {
+  color: $text-primary;
+
+  &::before,
+  &::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    color: $text-primary;
+    pointer-events: none;
+  }
+
+  &::before {
+    color: #00FFFF;
+    opacity: 0.75;
+    mix-blend-mode: screen;
+    animation: glitchBefore 5s infinite step-start 1.2s;
+  }
+
+  &::after {
+    color: #FF00CC;
+    opacity: 0.55;
+    mix-blend-mode: screen;
+    animation: glitchAfter 5s infinite step-start 1.8s;
+  }
+}
+
+// Dim hint line
+.dim {
+  color: $text-tertiary;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+}
+
+// ── Cursor ────────────────────────────────────────────────────────────────────
+
+.cursor {
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  background: $accent-primary;
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  border-radius: 1px;
+  animation: cursorBlink 0.75s step-end infinite;
+}
+
+// ── Reduced motion ────────────────────────────────────────────────────────────
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay   { animation: none; }
+  .terminal  { animation: none; }
+  .cursor    { animation: none; }
+
+  .glitch::before,
+  .glitch::after { display: none; }
+}

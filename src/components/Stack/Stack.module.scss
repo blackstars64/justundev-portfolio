@@ -1,0 +1,330 @@
+// =============================================================================
+// Stack.module.scss — Page /stack
+// =============================================================================
+
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+// ── Keyframes ─────────────────────────────────────────────────────────────────
+
+@keyframes stackFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cardReveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes glowDrift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(20px, -20px) scale(1.06); }
+}
+
+// ── Section ───────────────────────────────────────────────────────────────────
+
+.stack {
+  position: relative;
+  min-height: 100svh;
+  background-color: $bg-primary;
+  overflow: hidden;
+  padding-top: $space-12;
+  padding-bottom: $space-24;
+}
+
+// ── Glow decorations ──────────────────────────────────────────────────────────
+
+.glowLeft,
+.glowRight {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
+  animation: glowDrift 12s ease-in-out infinite;
+}
+
+.glowLeft {
+  top: 5%;
+  left: -12%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba($accent-primary, 0.18) 0%,
+    rgba($accent-primary, 0.05) 50%,
+    transparent 70%
+  );
+  animation-direction: normal;
+}
+
+.glowRight {
+  bottom: 10%;
+  right: -12%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba($accent-primary, 0.12) 0%,
+    transparent 65%
+  );
+  animation-direction: reverse;
+  animation-delay: -6s;
+}
+
+// ── Inner container ───────────────────────────────────────────────────────────
+
+.inner {
+  @include container;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $space-16;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+
+.header {
+  @include flex-col;
+  align-items: flex-start;
+  gap: $space-4;
+  max-width: 640px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  font-size: $fs-small;
+  font-weight: $fw-semibold;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $accent-primary;
+
+  opacity: 0;
+  animation: stackFadeUp 0.5s ease 0.05s forwards;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: $accent-primary;
+    opacity: 0.7;
+  }
+}
+
+.title {
+  font-family: $font-sans;
+  font-size: clamp(2.4rem, 5vw, $fs-h1);
+  font-weight: $fw-bold;
+  line-height: $lh-heading;
+  letter-spacing: -0.03em;
+  color: $text-primary;
+
+  opacity: 0;
+  animation: stackFadeUp 0.55s ease 0.15s forwards;
+}
+
+.titleAccent {
+  @include text-gradient;
+}
+
+.subtitle {
+  font-size: $fs-body-lg;
+  color: $text-secondary;
+  line-height: $lh-body;
+
+  opacity: 0;
+  animation: stackFadeUp 0.5s ease 0.28s forwards;
+}
+
+// ── Category section ──────────────────────────────────────────────────────────
+
+.category {
+  @include flex-col;
+  gap: $space-6;
+}
+
+.catTitle {
+  font-family: $font-sans;
+  font-size: $fs-body;
+  font-weight: $fw-semibold;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: $text-tertiary;
+  padding-bottom: $space-3;
+  border-bottom: 1px solid $border-separator;
+}
+
+// ── Grid ──────────────────────────────────────────────────────────────────────
+
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $space-4;
+
+  @include sm {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include lg {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+// ── Card ──────────────────────────────────────────────────────────────────────
+
+.card {
+  @include card;
+  @include card-hover;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $space-3;
+  padding: $space-5;
+  cursor: default;
+
+  // Staggered entrance — uses CSS custom property --delay
+  opacity: 0;
+  animation: cardReveal 0.45s cubic-bezier(0.22, 1, 0.36, 1) calc(0.4s + var(--delay, 0s)) forwards;
+
+  // Subtle accent gradient on hover (top border glow)
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(var(--tech-rgb, 139, 92, 246), 0.6),
+      transparent
+    );
+    opacity: 0;
+    transition: opacity $transition-base;
+  }
+
+  &:hover::after {
+    opacity: 1;
+  }
+}
+
+// ── Icon wrapper ──────────────────────────────────────────────────────────────
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: $radius-md;
+  background: color-mix(in srgb, var(--tech-color, #{$accent-primary}) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tech-color, #{$accent-primary}) 25%, transparent);
+  flex-shrink: 0;
+  transition: background $transition-base, box-shadow $transition-base;
+
+  .card:hover & {
+    background: color-mix(in srgb, var(--tech-color, #{$accent-primary}) 22%, transparent);
+    box-shadow: 0 0 16px color-mix(in srgb, var(--tech-color, #{$accent-primary}) 30%, transparent);
+  }
+
+  svg {
+    display: block;
+  }
+}
+
+// ── Tech name ─────────────────────────────────────────────────────────────────
+
+.techName {
+  font-family: $font-sans;
+  font-size: $fs-body;
+  font-weight: $fw-semibold;
+  color: $text-primary;
+  line-height: 1.2;
+}
+
+// ── Level badge ───────────────────────────────────────────────────────────────
+
+.level {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px $space-2;
+  border-radius: $radius-full;
+  font-size: 0.7rem;
+  font-weight: $fw-semibold;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+// Senior — violet (accent)
+.levelSenior {
+  background: rgba($accent-primary, 0.14);
+  border: 1px solid rgba($accent-primary, 0.4);
+  color: #b48df8; // accent-primary (#8B5CF6) lightened ~18%
+}
+
+// Pro — vert
+.levelPro {
+  background: rgba($status-success, 0.12);
+  border: 1px solid rgba($status-success, 0.35);
+  color: $status-success;
+}
+
+// Maîtrise — amber
+.levelMaîtrise {
+  background: rgba($status-warning, 0.12);
+  border: 1px solid rgba($status-warning, 0.35);
+  color: $status-warning;
+}
+
+// ── Reduced motion ────────────────────────────────────────────────────────────
+
+@media (prefers-reduced-motion: reduce) {
+  .eyebrow,
+  .title,
+  .subtitle,
+  .card {
+    animation: none;
+    opacity: 1;
+  }
+
+  .glowLeft,
+  .glowRight {
+    animation: none;
+  }
+
+  .card {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+
+  .iconWrap {
+    transition: none;
+  }
+}
