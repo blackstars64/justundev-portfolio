@@ -10,6 +10,6 @@ export async function GET(req: NextRequest) {
   const authError = checkAdminAuth(req);
   if (authError) return authError;
 
-  const bookings = getAllBookings();
+  const bookings = await getAllBookings();
   return NextResponse.json({ bookings });
 }

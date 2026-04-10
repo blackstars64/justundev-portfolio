@@ -4,36 +4,21 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import {
-  createBooking,
-  getSlotById,
-  isCalendrierPublic,
-} from '@/lib/calendar';
+import { createBooking, getSlotById, isCalendrierPublic } from '@/lib/calendar';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-
-// ── Sanitize ──────────────────────────────────────────────────────────────────
 
 function sanitize(str: string): string {
   return str.replace(/</g, '&lt;').replace(/>/g, '&gt;').trim();
 }
 
-// ── Validation ────────────────────────────────────────────────────────────────
-
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// ── Handler ───────────────────────────────────────────────────────────────────
-
 export async function POST(req: NextRequest) {
-  // Calendrier actif ?
-  if (!isCalendrierPublic()) {
-    return NextResponse.json(
-      { error: 'Le calendrier est désactivé.' },
-      { status: 403 }
-    );
+  if (!(await isCalendrierPublic())) {
+    return NextResponse.json({ error: 'Le calendrier est désactivé.' }, { status: 403 });
   }
 
-  // Parse
   let body: Record<string, unknown>;
   try {
     body = await req.json();
@@ -43,7 +28,6 @@ export async function POST(req: NextRequest) {
 
   const { slot_id, nom, email, message } = body as Record<string, unknown>;
 
-  // Validation types
   if (
     typeof slot_id !== 'number' ||
     typeof nom !== 'string' ||
@@ -66,31 +50,24 @@ export async function POST(req: NextRequest) {
   if (trimMessage.length < 10 || trimMessage.length > 1000)
     return NextResponse.json({ error: 'Message invalide (10–1000 caractères).' }, { status: 400 });
 
-  // Créneau valide ?
-  const slot = getSlotById(slot_id);
+  const slot = await getSlotById(slot_id);
   if (!slot || !slot.disponible) {
-    return NextResponse.json(
-      { error: 'Ce créneau n\'est plus disponible.' },
-      { status: 409 }
-    );
+    return NextResponse.json({ error: "Ce créneau n'est plus disponible." }, { status: 409 });
   }
 
-  // Créer la réservation
-  const booking = createBooking({
+  const booking = await createBooking({
     slot_id,
     nom: trimNom,
     email: trimEmail,
     message: trimMessage,
   });
 
-  // Emails Resend
   const to = process.env.CONTACT_TO_EMAIL;
   if (to && process.env.RESEND_API_KEY) {
     const safeNom     = sanitize(trimNom);
     const safeMessage = sanitize(trimMessage);
     const slotLabel   = `${slot.date} de ${slot.heure_debut} à ${slot.heure_fin}`;
 
-    // Email à moi
     await resend.emails.send({
       from: 'Portfolio <contact@justundev.fr>',
       to,
@@ -106,9 +83,8 @@ export async function POST(req: NextRequest) {
       text: `Nom : ${trimNom}\nEmail : ${trimEmail}\nCréneau : ${slotLabel}\n\n${trimMessage}`,
     });
 
-    // Confirmation au client
     await resend.emails.send({
-      from: 'Just\'un Dev <contact@justundev.fr>',
+      from: "Just'un Dev <contact@justundev.fr>",
       to: trimEmail,
       subject: 'Votre demande de RDV a bien été reçue',
       html: `

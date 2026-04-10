@@ -11,11 +11,10 @@ export async function GET(req: NextRequest) {
   const authError = checkAdminAuth(req);
   if (authError) return authError;
 
-  const slots = getAllSlots();
+  const slots = await getAllSlots();
   return NextResponse.json({ slots });
 }
 
-// Date ISO : YYYY-MM-DD, heure : HH:MM
 const dateRegex  = /^\d{4}-\d{2}-\d{2}$/;
 const heureRegex = /^\d{2}:\d{2}$/;
 
@@ -49,12 +48,12 @@ export async function POST(req: NextRequest) {
 
   if (heure_debut >= heure_fin) {
     return NextResponse.json(
-      { error: 'L\'heure de fin doit être après l\'heure de début.' },
+      { error: "L'heure de fin doit être après l'heure de début." },
       { status: 400 }
     );
   }
 
-  const slot = addSlot({
+  const slot = await addSlot({
     date,
     heure_debut,
     heure_fin,

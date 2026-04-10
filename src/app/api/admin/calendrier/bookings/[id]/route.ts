@@ -41,16 +41,15 @@ export async function PATCH(
     );
   }
 
-  const booking = getBookingById(bookingId);
+  const booking = await getBookingById(bookingId);
   if (!booking) {
     return NextResponse.json({ error: 'Demande introuvable.' }, { status: 404 });
   }
 
-  updateBookingStatus(bookingId, status);
+  await updateBookingStatus(bookingId, status);
 
-  // Email de notification au client
   if (process.env.RESEND_API_KEY) {
-    const slot = getSlotById(booking.slot_id);
+    const slot = await getSlotById(booking.slot_id);
     const slotLabel = slot
       ? `${slot.date} de ${slot.heure_debut} à ${slot.heure_fin}`
       : 'votre créneau';

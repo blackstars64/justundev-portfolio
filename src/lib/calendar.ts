@@ -1,8 +1,9 @@
 // =============================================================================
-// src/lib/calendar.ts — Fonctions CRUD calendrier
+// src/lib/calendar.ts — Fonctions CRUD calendrier (async, Turso/libSQL)
 // =============================================================================
 
 import getDb from './db';
+import type { Row } from '@libsql/client';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -30,109 +31,149 @@ export interface BookingWithSlot extends Booking {
   slot_heure_fin: string;
 }
 
+// ── Row converters ────────────────────────────────────────────────────────────
+
+function rowToSlot(row: Row): Slot {
+  return {
+    id: Number(row.id),
+    date: row.date as string,
+    heure_debut: row.heure_debut as string,
+    heure_fin: row.heure_fin as string,
+    disponible: Number(row.disponible),
+  };
+}
+
+function rowToBooking(row: Row): Booking {
+  return {
+    id: Number(row.id),
+    slot_id: Number(row.slot_id),
+    nom: row.nom as string,
+    email: row.email as string,
+    message: row.message as string,
+    status: row.status as 'pending' | 'confirmed' | 'refused',
+    created_at: row.created_at as string,
+  };
+}
+
 // ── Slots — public ────────────────────────────────────────────────────────────
 
-export function getAvailableSlots(): Slot[] {
-  const db = getDb();
-  return db
-    .prepare('SELECT * FROM slots WHERE disponible = 1 ORDER BY date, heure_debut')
-    .all() as Slot[];
+export async function getAvailableSlots(): Promise<Slot[]> {
+  const db = await getDb();
+  const result = await db.execute(
+    'SELECT * FROM slots WHERE disponible = 1 ORDER BY date, heure_debut'
+  );
+  return result.rows.map(rowToSlot);
 }
 
 // ── Slots — admin ─────────────────────────────────────────────────────────────
 
-export function getAllSlots(): Slot[] {
-  const db = getDb();
-  return db
-    .prepare('SELECT * FROM slots ORDER BY date, heure_debut')
-    .all() as Slot[];
+export async function getAllSlots(): Promise<Slot[]> {
+  const db = await getDb();
+  const result = await db.execute('SELECT * FROM slots ORDER BY date, heure_debut');
+  return result.rows.map(rowToSlot);
 }
 
-export function addSlot(slot: Omit<Slot, 'id'>): Slot {
-  const db = getDb();
-  const result = db
-    .prepare('INSERT INTO slots (date, heure_debut, heure_fin, disponible) VALUES (?, ?, ?, ?)')
-    .run(slot.date, slot.heure_debut, slot.heure_fin, slot.disponible ? 1 : 0);
-  return db
-    .prepare('SELECT * FROM slots WHERE id = ?')
-    .get(result.lastInsertRowid) as Slot;
+export async function addSlot(slot: Omit<Slot, 'id'>): Promise<Slot> {
+  const db = await getDb();
+  const result = await db.execute({
+    sql: 'INSERT INTO slots (date, heure_debut, heure_fin, disponible) VALUES (?, ?, ?, ?)',
+    args: [slot.date, slot.heure_debut, slot.heure_fin, slot.disponible ? 1 : 0],
+  });
+  const newId = Number(result.lastInsertRowid);
+  const row = await db.execute({ sql: 'SELECT * FROM slots WHERE id = ?', args: [newId] });
+  return rowToSlot(row.rows[0]);
 }
 
-export function setSlotDisponible(id: number, disponible: boolean): void {
-  const db = getDb();
-  db.prepare('UPDATE slots SET disponible = ? WHERE id = ?').run(disponible ? 1 : 0, id);
+export async function setSlotDisponible(id: number, disponible: boolean): Promise<void> {
+  const db = await getDb();
+  await db.execute({
+    sql: 'UPDATE slots SET disponible = ? WHERE id = ?',
+    args: [disponible ? 1 : 0, id],
+  });
 }
 
-export function deleteSlot(id: number): void {
-  const db = getDb();
-  db.prepare('DELETE FROM slots WHERE id = ?').run(id);
+export async function deleteSlot(id: number): Promise<void> {
+  const db = await getDb();
+  await db.execute({ sql: 'DELETE FROM slots WHERE id = ?', args: [id] });
 }
 
 // ── Bookings — public ─────────────────────────────────────────────────────────
 
-export function createBooking(
+export async function createBooking(
   booking: Omit<Booking, 'id' | 'status' | 'created_at'>
-): Booking {
-  const db = getDb();
-  const result = db
-    .prepare('INSERT INTO bookings (slot_id, nom, email, message) VALUES (?, ?, ?, ?)')
-    .run(booking.slot_id, booking.nom, booking.email, booking.message);
-  return db
-    .prepare('SELECT * FROM bookings WHERE id = ?')
-    .get(result.lastInsertRowid) as Booking;
+): Promise<Booking> {
+  const db = await getDb();
+  const result = await db.execute({
+    sql: 'INSERT INTO bookings (slot_id, nom, email, message) VALUES (?, ?, ?, ?)',
+    args: [booking.slot_id, booking.nom, booking.email, booking.message],
+  });
+  const newId = Number(result.lastInsertRowid);
+  const row = await db.execute({ sql: 'SELECT * FROM bookings WHERE id = ?', args: [newId] });
+  return rowToBooking(row.rows[0]);
 }
 
-export function getSlotById(id: number): Slot | null {
-  const db = getDb();
-  return (db.prepare('SELECT * FROM slots WHERE id = ?').get(id) as Slot) ?? null;
+export async function getSlotById(id: number): Promise<Slot | null> {
+  const db = await getDb();
+  const result = await db.execute({ sql: 'SELECT * FROM slots WHERE id = ?', args: [id] });
+  return result.rows.length > 0 ? rowToSlot(result.rows[0]) : null;
 }
 
 // ── Bookings — admin ──────────────────────────────────────────────────────────
 
-export function getAllBookings(): BookingWithSlot[] {
-  const db = getDb();
-  return db
-    .prepare(`
-      SELECT
-        b.*,
-        s.date        AS slot_date,
-        s.heure_debut AS slot_heure_debut,
-        s.heure_fin   AS slot_heure_fin
-      FROM bookings b
-      JOIN slots s ON b.slot_id = s.id
-      ORDER BY
-        CASE b.status WHEN 'pending' THEN 0 ELSE 1 END,
-        b.created_at DESC
-    `)
-    .all() as BookingWithSlot[];
+export async function getAllBookings(): Promise<BookingWithSlot[]> {
+  const db = await getDb();
+  const result = await db.execute(`
+    SELECT
+      b.*,
+      s.date        AS slot_date,
+      s.heure_debut AS slot_heure_debut,
+      s.heure_fin   AS slot_heure_fin
+    FROM bookings b
+    JOIN slots s ON b.slot_id = s.id
+    ORDER BY
+      CASE b.status WHEN 'pending' THEN 0 ELSE 1 END,
+      b.created_at DESC
+  `);
+  return result.rows.map((row) => ({
+    ...rowToBooking(row),
+    slot_date: row.slot_date as string,
+    slot_heure_debut: row.slot_heure_debut as string,
+    slot_heure_fin: row.slot_heure_fin as string,
+  }));
 }
 
-export function updateBookingStatus(
+export async function updateBookingStatus(
   id: number,
   status: 'confirmed' | 'refused'
-): void {
-  const db = getDb();
-  db.prepare('UPDATE bookings SET status = ? WHERE id = ?').run(status, id);
+): Promise<void> {
+  const db = await getDb();
+  await db.execute({
+    sql: 'UPDATE bookings SET status = ? WHERE id = ?',
+    args: [status, id],
+  });
 }
 
-export function getBookingById(id: number): Booking | null {
-  const db = getDb();
-  return (db.prepare('SELECT * FROM bookings WHERE id = ?').get(id) as Booking) ?? null;
+export async function getBookingById(id: number): Promise<Booking | null> {
+  const db = await getDb();
+  const result = await db.execute({ sql: 'SELECT * FROM bookings WHERE id = ?', args: [id] });
+  return result.rows.length > 0 ? rowToBooking(result.rows[0]) : null;
 }
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
-export function isCalendrierPublic(): boolean {
-  const db = getDb();
-  const row = db
-    .prepare('SELECT value FROM config WHERE key = ?')
-    .get('calendrier_public') as { value: string } | undefined;
-  return row?.value === '1';
+export async function isCalendrierPublic(): Promise<boolean> {
+  const db = await getDb();
+  const result = await db.execute({
+    sql: 'SELECT value FROM config WHERE key = ?',
+    args: ['calendrier_public'],
+  });
+  return result.rows.length > 0 && (result.rows[0].value as string) === '1';
 }
 
-export function setCalendrierPublic(isPublic: boolean): void {
-  const db = getDb();
-  db
-    .prepare('UPDATE config SET value = ? WHERE key = ?')
-    .run(isPublic ? '1' : '0', 'calendrier_public');
+export async function setCalendrierPublic(isPublic: boolean): Promise<void> {
+  const db = await getDb();
+  await db.execute({
+    sql: 'UPDATE config SET value = ? WHERE key = ?',
+    args: [isPublic ? '1' : '0', 'calendrier_public'],
+  });
 }

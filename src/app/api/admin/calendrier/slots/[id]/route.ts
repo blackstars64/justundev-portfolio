@@ -19,14 +19,13 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: 'ID invalide.' }, { status: 400 });
   }
 
-  const slot = getSlotById(slotId);
+  const slot = await getSlotById(slotId);
   if (!slot) {
     return NextResponse.json({ error: 'Créneau introuvable.' }, { status: 404 });
   }
 
-  // Toggle
   const newDisponible = slot.disponible === 0;
-  setSlotDisponible(slotId, newDisponible);
+  await setSlotDisponible(slotId, newDisponible);
 
   return NextResponse.json({ success: true, disponible: newDisponible });
 }
@@ -41,11 +40,11 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: 'ID invalide.' }, { status: 400 });
   }
 
-  const slot = getSlotById(slotId);
+  const slot = await getSlotById(slotId);
   if (!slot) {
     return NextResponse.json({ error: 'Créneau introuvable.' }, { status: 404 });
   }
 
-  deleteSlot(slotId);
+  await deleteSlot(slotId);
   return NextResponse.json({ success: true });
 }

@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const authError = checkAdminAuth(req);
   if (authError) return authError;
 
-  return NextResponse.json({ public: isCalendrierPublic() });
+  return NextResponse.json({ public: await isCalendrierPublic() });
 }
 
 export async function POST(req: NextRequest) {
@@ -30,6 +30,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Champ "public" (boolean) requis.' }, { status: 400 });
   }
 
-  setCalendrierPublic(isPublic);
+  await setCalendrierPublic(isPublic);
   return NextResponse.json({ success: true, public: isPublic });
 }
