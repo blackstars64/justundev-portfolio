@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: '/stack',     label: 'Stack' },
   { href: '/dataviz',   label: 'Data' },
   { href: '/contact',   label: 'Contact' },
+  { href: '/calendrier', label: 'RDV' },
 ];
 
 export default function Nav() {
