@@ -19,9 +19,39 @@ const fontMono = JetBrains_Mono({
   display: "swap",
 });
 
+const BASE_URL = 'https://www.justundev.fr';
+
 export const metadata: Metadata = {
-  title: "Just'un Dev — Développeur Full-Stack & Data Viz",
-  description: "Portfolio freelance de Blackstars64 — Je crée des applications modernes et des visualisations de données interactives.",
+  metadataBase: new URL(BASE_URL),
+  title: {
+    default: "Just'un Dev — Développeur Full-Stack & Data Viz",
+    template: "%s | Just'un Dev",
+  },
+  description:
+    "Développeur freelance Full-Stack TypeScript — Next.js, Node.js, D3.js. E-commerce, sites vitrine, logiciels sur-mesure et data viz.",
+  keywords: ['développeur freelance', 'next.js', 'typescript', 'data viz', 'd3.js', 'react', 'node.js', 'fullstack'],
+  authors: [{ name: 'Blackstars64', url: BASE_URL }],
+  creator: 'Blackstars64',
+  openGraph: {
+    type: 'website',
+    locale: 'fr_FR',
+    url: BASE_URL,
+    siteName: "Just'un Dev",
+    title: "Just'un Dev — Développeur Full-Stack & Data Viz",
+    description:
+      "Développeur freelance Full-Stack TypeScript — Next.js, Node.js, D3.js. E-commerce, sites vitrine, logiciels sur-mesure et data viz.",
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Just'un Dev — Développeur Full-Stack & Data Viz",
+    description:
+      "Développeur freelance Full-Stack TypeScript — Next.js, Node.js, D3.js. E-commerce, sites vitrine, logiciels sur-mesure et data viz.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
 };
 
 export default function RootLayout({

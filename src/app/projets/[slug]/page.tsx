@@ -17,8 +17,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const projet = getProjet(slug);
   if (!projet) return {};
   return {
-    title: `${projet.titre} — Just'un Dev`,
+    title: projet.titre,
     description: projet.tagline,
+    openGraph: {
+      title: projet.titre,
+      description: projet.tagline,
+    },
   };
 }
 
