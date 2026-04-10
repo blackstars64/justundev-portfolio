@@ -1,0 +1,536 @@
+// =============================================================================
+// calendrier.module.scss
+// =============================================================================
+
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+// ── Keyframes ─────────────────────────────────────────────────────────────────
+
+@keyframes calSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes formReveal {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── Section ───────────────────────────────────────────────────────────────────
+
+.section {
+  position: relative;
+  min-height: 100svh;
+  background: $bg-primary;
+  overflow: hidden;
+}
+
+.glow {
+  position: absolute;
+  top: -10%;
+  right: -5%;
+  width: 640px;
+  height: 640px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba($accent-primary, 0.14) 0%,
+    rgba($accent-primary, 0.04) 45%,
+    transparent 70%
+  );
+  filter: blur(90px);
+  pointer-events: none;
+}
+
+// ── Inner ─────────────────────────────────────────────────────────────────────
+
+.inner {
+  @include container;
+  position: relative;
+  z-index: 1;
+  @include flex-col;
+  gap: $space-8;
+  padding-top: $space-24;
+  padding-bottom: $space-24;
+}
+
+// ── Loader ────────────────────────────────────────────────────────────────────
+
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 3px solid $border-subtle;
+  border-top-color: $accent-primary;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: $space-20 auto;
+}
+
+// ── Private view ──────────────────────────────────────────────────────────────
+
+.privateWrap {
+  @include flex-col;
+  align-items: center;
+  gap: $space-6;
+  text-align: center;
+  padding: $space-24 0;
+  animation: calSlideUp 0.5s ease forwards;
+}
+
+.privateIcon {
+  font-size: 3rem;
+  filter: grayscale(0.3);
+}
+
+.privateDesc {
+  font-size: $fs-body-lg;
+  color: $text-secondary;
+  max-width: 40ch;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  padding: $space-4 $space-8;
+  background: $accent-primary;
+  color: #fff;
+  font-size: $fs-body;
+  font-weight: $fw-semibold;
+  border-radius: $radius-md;
+  transition: background $transition-base, box-shadow $transition-base;
+
+  &:hover {
+    background: $accent-hover;
+    box-shadow: $shadow-glow;
+    color: #fff;
+  }
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+
+.header {
+  opacity: 0;
+  animation: calSlideUp 0.5s ease 0.05s forwards;
+}
+
+.label {
+  font-family: $font-mono;
+  font-size: $fs-small;
+  color: $accent-primary;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: $space-3;
+}
+
+.title {
+  font-size: clamp(2rem, 4vw, $fs-h2);
+  font-weight: $fw-bold;
+  letter-spacing: -0.02em;
+  line-height: $lh-heading;
+  color: $text-primary;
+  margin-bottom: $space-3;
+}
+
+.desc {
+  font-size: $fs-body-lg;
+  color: $text-secondary;
+  max-width: 52ch;
+}
+
+// ── Calendar card ─────────────────────────────────────────────────────────────
+
+.calendarCard {
+  @include card;
+  padding: $space-6;
+  opacity: 0;
+  animation: calSlideUp 0.5s ease 0.1s forwards;
+}
+
+// ── Nav ───────────────────────────────────────────────────────────────────────
+
+.calendarNav {
+  @include flex-between;
+  gap: $space-4;
+  margin-bottom: $space-6;
+}
+
+.weekLabel {
+  font-size: $fs-body;
+  font-weight: $fw-medium;
+  color: $text-primary;
+  text-align: center;
+  flex: 1;
+}
+
+.navBtn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-md;
+  background: $bg-elevated;
+  color: $text-secondary;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition:
+    background $transition-base,
+    border-color $transition-base,
+    color $transition-base;
+
+  &:hover {
+    background: rgba($accent-primary, 0.1);
+    border-color: rgba($accent-primary, 0.35);
+    color: $accent-primary;
+  }
+
+  &:focus-visible { @include focus-ring; }
+}
+
+// ── Week grid ─────────────────────────────────────────────────────────────────
+
+.weekGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: $space-2;
+
+  @include below-md {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: #{$bp-xs}) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+// ── Day column ────────────────────────────────────────────────────────────────
+
+.dayCol {
+  @include flex-col;
+  gap: $space-2;
+  border-radius: $radius-md;
+  padding: $space-3 $space-2;
+  border: 1px solid transparent;
+  transition: border-color $transition-base;
+
+  &.today {
+    border-color: rgba($accent-primary, 0.2);
+    background: rgba($accent-primary, 0.04);
+  }
+
+  &.past {
+    opacity: 0.4;
+  }
+}
+
+.dayHeader {
+  @include flex-col;
+  align-items: center;
+  gap: $space-1;
+  padding-bottom: $space-2;
+  border-bottom: 1px solid $border-separator;
+  margin-bottom: $space-1;
+}
+
+.dayName {
+  font-family: $font-mono;
+  font-size: 0.75rem;
+  color: $text-tertiary;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dayNum {
+  font-size: $fs-small;
+  font-weight: $fw-medium;
+  color: $text-secondary;
+
+  .today & {
+    color: $accent-primary;
+    font-weight: $fw-semibold;
+  }
+}
+
+// ── Slot button ───────────────────────────────────────────────────────────────
+
+.slotList {
+  @include flex-col;
+  gap: $space-1;
+  align-items: stretch;
+}
+
+.noSlot {
+  font-size: $fs-small;
+  color: $text-tertiary;
+  text-align: center;
+  padding: $space-2 0;
+}
+
+.slotBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: $space-2 $space-1;
+  font-size: 0.7rem;
+  font-family: $font-mono;
+  font-weight: $fw-medium;
+  background: rgba($accent-primary, 0.08);
+  border: 1px solid rgba($accent-primary, 0.2);
+  border-radius: $radius-sm;
+  color: $accent-primary;
+  cursor: pointer;
+  transition:
+    background $transition-fast,
+    border-color $transition-fast,
+    box-shadow $transition-fast,
+    transform $transition-fast;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    background: rgba($accent-primary, 0.18);
+    border-color: rgba($accent-primary, 0.45);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba($accent-primary, 0.2);
+  }
+
+  &.slotSelected {
+    background: $accent-primary;
+    border-color: $accent-primary;
+    color: #fff;
+    box-shadow: 0 0 14px rgba($accent-primary, 0.4);
+  }
+
+  &.slotDisabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  &:focus-visible { @include focus-ring; }
+}
+
+.slotSep {
+  color: currentColor;
+  opacity: 0.6;
+  margin: 0 1px;
+}
+
+// ── Form card ─────────────────────────────────────────────────────────────────
+
+.formCard {
+  @include card;
+  padding: $space-8;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity $transition-base;
+
+  &.formCardVisible {
+    opacity: 1;
+    pointer-events: auto;
+    animation: formReveal 0.35s ease forwards;
+  }
+}
+
+.formHint {
+  color: $text-tertiary;
+  font-size: $fs-body;
+  text-align: center;
+  padding: $space-4 0;
+}
+
+// ── Selected slot banner ──────────────────────────────────────────────────────
+
+.selectedInfo {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-3 $space-4;
+  background: rgba($accent-primary, 0.08);
+  border: 1px solid rgba($accent-primary, 0.25);
+  border-radius: $radius-md;
+  margin-bottom: $space-5;
+  flex-wrap: wrap;
+}
+
+.selectedLabel {
+  font-size: $fs-small;
+  font-weight: $fw-medium;
+  color: $accent-primary;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.selectedValue {
+  font-family: $font-mono;
+  font-size: $fs-small;
+  color: $text-primary;
+  flex: 1;
+}
+
+.clearSlot {
+  font-size: $fs-small;
+  color: $text-tertiary;
+  padding: $space-1;
+  border-radius: $radius-sm;
+  transition: color $transition-fast;
+  cursor: pointer;
+  background: none;
+  border: none;
+
+  &:hover { color: $status-error; }
+  &:focus-visible { @include focus-ring; }
+}
+
+// ── Form fields ───────────────────────────────────────────────────────────────
+
+.form {
+  @include flex-col;
+  gap: $space-5;
+}
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $space-5;
+
+  @include sm { grid-template-columns: 1fr 1fr; }
+}
+
+.field {
+  @include flex-col;
+  gap: $space-2;
+}
+
+.fieldLabel {
+  font-size: $fs-small;
+  font-weight: $fw-medium;
+  color: $text-secondary;
+  letter-spacing: 0.02em;
+}
+
+.required { color: $accent-primary; }
+
+.input,
+.textarea {
+  width: 100%;
+  padding: $space-3 $space-4;
+  background: $bg-elevated;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-md;
+  color: $text-primary;
+  font-family: $font-sans;
+  font-size: $fs-body;
+  line-height: $lh-body;
+  transition: border-color $transition-base, box-shadow $transition-base;
+  outline: none;
+
+  &::placeholder { color: $text-tertiary; }
+
+  &:focus {
+    border-color: rgba($accent-primary, 0.6);
+    box-shadow: 0 0 0 3px rgba($accent-primary, 0.12);
+  }
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+// ── Submit ────────────────────────────────────────────────────────────────────
+
+.submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  padding: $space-4 $space-8;
+  background: $accent-primary;
+  color: #fff;
+  font-family: $font-sans;
+  font-size: $fs-body;
+  font-weight: $fw-semibold;
+  border: none;
+  border-radius: $radius-md;
+  cursor: pointer;
+  align-self: flex-start;
+  transition:
+    background $transition-base,
+    box-shadow $transition-base,
+    transform $transition-fast;
+
+  &:hover:not(:disabled) {
+    background: $accent-hover;
+    box-shadow: 0 0 28px rgba($accent-primary, 0.45);
+    transform: translateY(-2px);
+  }
+
+  &:active:not(:disabled) { transform: translateY(0); }
+
+  &:disabled { opacity: 0.65; cursor: not-allowed; }
+
+  &:focus-visible { @include focus-ring; }
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(#fff, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+// ── Feedback ──────────────────────────────────────────────────────────────────
+
+.feedbackSuccess {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  padding: $space-4;
+  border-radius: $radius-md;
+  background: rgba($status-success, 0.08);
+  border: 1px solid rgba($status-success, 0.25);
+  color: $status-success;
+  font-size: $fs-body;
+  line-height: $lh-body;
+}
+
+.feedbackError {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  padding: $space-4;
+  border-radius: $radius-md;
+  background: rgba($status-error, 0.08);
+  border: 1px solid rgba($status-error, 0.25);
+  color: $status-error;
+  font-size: $fs-body;
+  line-height: $lh-body;
+}
+
+// ── Reduced motion ────────────────────────────────────────────────────────────
+
+@media (prefers-reduced-motion: reduce) {
+  .header,
+  .calendarCard,
+  .formCard,
+  .privateWrap {
+    animation: none;
+    opacity: 1;
+  }
+
+  .loader,
+  .spinner {
+    animation: none;
+  }
+}

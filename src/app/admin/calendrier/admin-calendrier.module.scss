@@ -1,0 +1,516 @@
+// =============================================================================
+// admin-calendrier.module.scss
+// =============================================================================
+
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── Section ───────────────────────────────────────────────────────────────────
+
+.section {
+  min-height: 100svh;
+  background: $bg-primary;
+}
+
+// ── Unlock ────────────────────────────────────────────────────────────────────
+
+.unlockWrap {
+  @include flex-col;
+  align-items: center;
+  justify-content: center;
+  min-height: 100svh;
+  gap: $space-6;
+  padding: $space-6;
+  animation: slideUp 0.45s ease forwards;
+}
+
+.unlockForm {
+  @include card;
+  @include flex-col;
+  gap: $space-5;
+  width: 100%;
+  max-width: 400px;
+  padding: $space-8;
+}
+
+// ── Inner ─────────────────────────────────────────────────────────────────────
+
+.inner {
+  @include container;
+  @include flex-col;
+  gap: $space-8;
+  padding-top: $space-24;
+  padding-bottom: $space-24;
+  animation: slideUp 0.45s ease forwards;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+
+.adminHeader {
+  @include flex-between;
+  flex-wrap: wrap;
+  gap: $space-4;
+}
+
+.label {
+  font-family: $font-mono;
+  font-size: $fs-small;
+  color: $accent-primary;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: $space-2;
+}
+
+.title {
+  font-size: clamp(1.75rem, 3vw, $fs-h2);
+  font-weight: $fw-bold;
+  letter-spacing: -0.02em;
+  color: $text-primary;
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+
+.tabs {
+  display: flex;
+  gap: $space-2;
+  border-bottom: 1px solid $border-subtle;
+  padding-bottom: 0;
+  flex-wrap: wrap;
+}
+
+.tabBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-3 $space-5;
+  font-size: $fs-body;
+  font-weight: $fw-medium;
+  color: $text-secondary;
+  border-radius: $radius-md $radius-md 0 0;
+  background: none;
+  border: 1px solid transparent;
+  border-bottom: none;
+  cursor: pointer;
+  transition: color $transition-fast, background $transition-fast;
+  position: relative;
+  bottom: -1px;
+
+  &:hover { color: $text-primary; }
+
+  &:focus-visible { @include focus-ring; }
+}
+
+.tabActive {
+  color: $accent-primary;
+  border-color: $border-subtle;
+  background: $bg-card;
+  border-bottom-color: $bg-card;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 $space-1;
+  background: $accent-primary;
+  color: #fff;
+  border-radius: $radius-full;
+  font-size: 0.7rem;
+  font-weight: $fw-bold;
+}
+
+// ── Tab content ───────────────────────────────────────────────────────────────
+
+.tabContent {
+  @include flex-col;
+  gap: $space-6;
+}
+
+.empty {
+  color: $text-tertiary;
+  font-size: $fs-body;
+  padding: $space-8 0;
+  text-align: center;
+}
+
+// ── Booking list ──────────────────────────────────────────────────────────────
+
+.bookingList {
+  @include flex-col;
+  gap: $space-4;
+}
+
+.bookingCard {
+  @include card;
+  padding: $space-6;
+  @include flex-col;
+  gap: $space-4;
+  border-left: 3px solid $border-subtle;
+
+  &.status_pending   { border-left-color: $status-warning; }
+  &.status_confirmed { border-left-color: $status-success; }
+  &.status_refused   { border-left-color: $status-error; opacity: 0.65; }
+}
+
+.bookingTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $space-4;
+  flex-wrap: wrap;
+}
+
+.bookingInfo {
+  @include flex-col;
+  gap: $space-1;
+}
+
+.bookingName {
+  font-weight: $fw-semibold;
+  color: $text-primary;
+  font-size: $fs-body-lg;
+}
+
+.bookingEmail {
+  font-size: $fs-small;
+  color: $accent-primary;
+
+  &:hover { color: $accent-hover; }
+}
+
+.bookingSlot {
+  font-family: $font-mono;
+  font-size: $fs-small;
+  color: $text-secondary;
+}
+
+.bookingDate {
+  font-size: $fs-small;
+  color: $text-tertiary;
+}
+
+.statusBadge {
+  padding: $space-1 $space-3;
+  border-radius: $radius-full;
+  font-size: $fs-small;
+  font-weight: $fw-medium;
+  white-space: nowrap;
+
+  &.badge_pending   { background: rgba($status-warning, 0.12); color: $status-warning; }
+  &.badge_confirmed { background: rgba($status-success, 0.12); color: $status-success; }
+  &.badge_refused   { background: rgba($status-error,   0.12); color: $status-error; }
+}
+
+.bookingMessage {
+  font-size: $fs-body;
+  color: $text-secondary;
+  line-height: $lh-body;
+  padding: $space-4;
+  background: $bg-elevated;
+  border-radius: $radius-md;
+  border: 1px solid $border-separator;
+  white-space: pre-wrap;
+}
+
+.bookingActions {
+  display: flex;
+  gap: $space-3;
+  flex-wrap: wrap;
+}
+
+// ── Slot list ─────────────────────────────────────────────────────────────────
+
+.addSlotCard {
+  @include card;
+  padding: $space-6;
+  @include flex-col;
+  gap: $space-5;
+}
+
+.addSlotForm {
+  @include flex-col;
+  gap: $space-4;
+}
+
+.sectionTitle {
+  font-size: $fs-body-lg;
+  font-weight: $fw-semibold;
+  color: $text-primary;
+}
+
+.slotList {
+  @include flex-col;
+  gap: $space-3;
+}
+
+.slotRow {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+  flex-wrap: wrap;
+  padding: $space-4;
+  background: $bg-card;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-md;
+  transition: opacity $transition-base;
+
+  &.slotIndispo {
+    opacity: 0.55;
+  }
+}
+
+.slotDate {
+  font-family: $font-mono;
+  font-size: $fs-small;
+  color: $text-secondary;
+  min-width: 8rem;
+}
+
+.slotTime {
+  font-family: $font-mono;
+  font-size: $fs-small;
+  color: $text-primary;
+  font-weight: $fw-medium;
+  flex: 1;
+}
+
+.disponibleBadge {
+  padding: $space-1 $space-3;
+  border-radius: $radius-full;
+  font-size: $fs-small;
+  font-weight: $fw-medium;
+
+  &.disponibleOn  { background: rgba($status-success, 0.12); color: $status-success; }
+  &.disponibleOff { background: rgba($status-error,   0.12); color: $status-error; }
+}
+
+.slotActions {
+  display: flex;
+  gap: $space-2;
+  flex-wrap: wrap;
+}
+
+// ── Params ────────────────────────────────────────────────────────────────────
+
+.paramCard {
+  @include card;
+  padding: $space-8;
+  @include flex-col;
+  gap: $space-6;
+  max-width: 560px;
+}
+
+.paramDesc {
+  font-size: $fs-body;
+  color: $text-secondary;
+  line-height: $lh-body;
+
+  code {
+    background: $bg-elevated;
+    padding: 0 $space-2;
+    border-radius: $radius-sm;
+    font-size: $fs-code;
+    color: $accent-primary;
+  }
+}
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  gap: $space-6;
+  flex-wrap: wrap;
+}
+
+.toggleLabel {
+  font-size: $fs-body;
+  color: $text-secondary;
+
+  strong { color: $text-primary; }
+}
+
+.statusOn  { color: $status-success; }
+.statusOff { color: $status-error; }
+
+// ── Shared form ───────────────────────────────────────────────────────────────
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $space-4;
+
+  @include sm { grid-template-columns: repeat(3, 1fr); }
+}
+
+.field {
+  @include flex-col;
+  gap: $space-2;
+}
+
+.fieldLabel {
+  font-size: $fs-small;
+  font-weight: $fw-medium;
+  color: $text-secondary;
+  letter-spacing: 0.02em;
+}
+
+.input {
+  width: 100%;
+  padding: $space-3 $space-4;
+  background: $bg-elevated;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-md;
+  color: $text-primary;
+  font-family: $font-sans;
+  font-size: $fs-body;
+  outline: none;
+  transition: border-color $transition-base, box-shadow $transition-base;
+
+  &::placeholder { color: $text-tertiary; }
+
+  &:focus {
+    border-color: rgba($accent-primary, 0.6);
+    box-shadow: 0 0 0 3px rgba($accent-primary, 0.12);
+  }
+
+  // date/time native picker
+  &[type='date'],
+  &[type='time'] {
+    color-scheme: dark;
+  }
+}
+
+// ── Buttons ───────────────────────────────────────────────────────────────────
+
+%btn-base {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-3 $space-5;
+  border-radius: $radius-md;
+  font-size: $fs-small;
+  font-weight: $fw-semibold;
+  cursor: pointer;
+  border: none;
+  transition:
+    background $transition-base,
+    box-shadow $transition-base,
+    opacity $transition-fast;
+
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &:focus-visible { @include focus-ring; }
+}
+
+.btnPrimary {
+  @extend %btn-base;
+  background: $accent-primary;
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: $accent-hover;
+    box-shadow: 0 0 20px rgba($accent-primary, 0.4);
+  }
+}
+
+.btnOutline {
+  @extend %btn-base;
+  background: transparent;
+  color: $text-secondary;
+  border: 1px solid $border-subtle;
+
+  &:hover:not(:disabled) {
+    border-color: rgba($accent-primary, 0.35);
+    color: $accent-primary;
+    background: rgba($accent-primary, 0.06);
+  }
+}
+
+.btnConfirm {
+  @extend %btn-base;
+  background: rgba($status-success, 0.12);
+  color: $status-success;
+  border: 1px solid rgba($status-success, 0.25);
+
+  &:hover:not(:disabled) {
+    background: rgba($status-success, 0.22);
+  }
+}
+
+.btnRefuse {
+  @extend %btn-base;
+  background: rgba($status-error, 0.08);
+  color: $status-error;
+  border: 1px solid rgba($status-error, 0.2);
+
+  &:hover:not(:disabled) {
+    background: rgba($status-error, 0.16);
+  }
+}
+
+.btnDanger {
+  @extend %btn-base;
+  background: rgba($status-error, 0.08);
+  color: $status-error;
+  border: 1px solid rgba($status-error, 0.2);
+
+  &:hover:not(:disabled) {
+    background: rgba($status-error, 0.16);
+  }
+}
+
+// ── Feedback ──────────────────────────────────────────────────────────────────
+
+.feedbackSuccess {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  padding: $space-3 $space-4;
+  border-radius: $radius-md;
+  background: rgba($status-success, 0.08);
+  border: 1px solid rgba($status-success, 0.25);
+  color: $status-success;
+  font-size: $fs-small;
+}
+
+.feedbackError {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  padding: $space-3 $space-4;
+  border-radius: $radius-md;
+  background: rgba($status-error, 0.08);
+  border: 1px solid rgba($status-error, 0.25);
+  color: $status-error;
+  font-size: $fs-small;
+}
+
+// ── Spinner ───────────────────────────────────────────────────────────────────
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(#fff, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+// ── Reduced motion ────────────────────────────────────────────────────────────
+
+@media (prefers-reduced-motion: reduce) {
+  .unlockWrap,
+  .inner    { animation: none; opacity: 1; }
+  .spinner  { animation: none; }
+}
