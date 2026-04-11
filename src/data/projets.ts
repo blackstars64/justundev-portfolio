@@ -108,8 +108,8 @@ export const projets: Projet[] = [
   {
     slug:    'blackdesk',
     titre:   'BlackDesk',
-    tagline: 'OS freelance local-first — planning, projets, facturation et Insight Engine IA intégré.',
-    stack:   ['Tauri 2', 'Next.js 15', 'TypeScript', 'SCSS', 'SQLite', 'D3.js', 'Claude API', 'Resend'],
+    tagline: 'OS freelance local-first — planning, projets, Insight Engine IA et Daily Control Panel.',
+    stack:   ['Tauri 2', 'Next.js 16', 'TypeScript', 'SCSS', 'SQLite', 'Vitest', 'Claude API', 'Resend'],
     statut:  'En dev',
     image:   '/projets/blackdesk.png',
     lienDemo: undefined,
@@ -126,15 +126,15 @@ export const projets: Projet[] = [
       },
       {
         titre:   'Architecture',
-        contenu: "Application desktop Tauri 2 : backend Rust léger + frontend Next.js 15 (App Router) packagé en natif. Persistance locale avec SQLite + better-sqlite3 — toutes les données restent sur la machine. L'Insight Engine tourne entièrement en local (5 analyzers : tâches, projets, business, temps/énergie, comportement). Claude API intervient uniquement pour le briefing matin et l'assistant IA — avec support BYOK (clé utilisateur chiffrée localement, coût zéro pour le produit). Dashboard D3.js pour les courbes CA/dépenses/bénéfice. Resend pour l'envoi automatique des factures PDF.",
+        contenu: "Application desktop Tauri 2 : backend Rust léger + frontend Next.js 16 (App Router) packagé en natif. Persistance locale via tauri-plugin-sql (SQLite) — toutes les données restent sur la machine. Architecture Repository Pattern : domain (entités Zod), infra (repos SQLite), application (use cases). L'Insight Engine tourne entièrement en local (5 analyzers : tâches, projets, business, temps/énergie, comportement). Claude API uniquement pour le briefing matin et l'assistant IA — support BYOK (clé chiffrée localement). 189 tests Vitest, CI/CD GitHub Actions, branches main / preprod / develop.",
       },
       {
-        titre:   'Modules',
-        contenu: "V1 : Daily Control Panel (NBA + score du jour + alertes), Planning semaine/mois (5 catégories colorées), Projets (fiches + % avancement + tâches liées), Quick Capture (ajout rapide accessible partout). V2 : Clients, Devis, Factures PDF auto (react-pdf + mentions légales FR), Dépenses avec OCR. V3 : Dashboard D3.js (CA, dépenses, bénéfice), IA Claude (briefing matin + assistant), BYOK settings (provider, modèle, clé chiffrée). V4 : automatisations Stripe/GitHub/URSSAF. V5 : SaaS multi-tenant, plans Free/Medium/Pro.",
+        titre:   'Ce qui est livré',
+        contenu: "Phase 0 complète : auth locale (bcryptjs + React Context), schéma SQLite 9 tables, backup automatique Tauri (24h, rétention 7j), CI/CD. Phase 1 en cours : Daily Control Panel (NBA toujours visible, score du jour, alertes, KPI cards), Planning semaine avec 5 catégories colorées et tâches flottantes, Fiches projets (% avancement, deadline, création/suppression), Quick Capture global (Ctrl+K). Design dark mode — logo 3D gradient violet→bleu→argent, cards sombres, halos violets.",
       },
       {
-        titre:   'Statut',
-        contenu: "Projet en conception active — architecture et spécifications finalisées, phases planifiées jusqu'en 2027. Phase 0 (fondations : repo, DB, auth, Tauri) prévue pour juillet 2026. Le design s'appuie sur un logo 3D animé (gradient violet→bleu→argent) et un dashboard dark mode aux cards sombres avec halos violets.",
+        titre:   'Prochaines étapes',
+        contenu: "Phase 1 fin : vue mois, tâches récurrentes, lien tâche→projet. Phase 2 : Clients, Devis, Factures PDF (react-pdf, mentions légales FR), Dépenses avec OCR. Phase 3 : Dashboard D3.js (CA, dépenses, bénéfice), IA Claude (briefing matin + assistant), BYOK settings. Phase 4 : automatisations Stripe/GitHub/URSSAF. Phase 5 (2027) : SaaS multi-tenant, plans Free/Medium/Pro, RGPD complet.",
       },
     ],
   },
