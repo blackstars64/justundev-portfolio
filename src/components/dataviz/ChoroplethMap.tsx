@@ -31,10 +31,19 @@ export default function ChoroplethMap() {
   const tooltipRef   = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const el  = containerRef.current!;
-    const tip = tooltipRef.current!;
+    const el  = containerRef.current;
+    const tip = tooltipRef.current;
+    if (!el || !tip) return;
 
-    const W = el.getBoundingClientRect().width || 680;
+    let cancelled = false;
+
+    const draw = () => {
+      const W = el.getBoundingClientRect().width;
+      if (!W) return;
+
+      observer.disconnect(); // dessinée une fois — pas besoin de redessiner au resize
+      d3.select(el).select('svg').remove();
+
     const H = Math.min(W * 0.9, 580);
 
     const svg = d3.select(el).append('svg')
@@ -63,6 +72,7 @@ export default function ChoroplethMap() {
 
     // ── Chargement GeoJSON ────────────────────────────────────────────────────
     d3.json(GEOJSON_URL).then((geojson: unknown) => {
+      if (cancelled) return;
       const geo = geojson as GeoJSON.FeatureCollection;
 
       // Régions
@@ -140,6 +150,7 @@ export default function ChoroplethMap() {
         });
 
     }).catch(() => {
+      if (cancelled) return;
       svg.append('text')
         .attr('x', W / 2).attr('y', H / 2)
         .attr('text-anchor', 'middle')
@@ -148,8 +159,17 @@ export default function ChoroplethMap() {
         .attr('font-size', '13px')
         .text('Impossible de charger la carte (réseau requis)');
     });
+    }; // fin draw()
 
-    return () => { d3.select(el).select('svg').remove(); };
+    const observer = new ResizeObserver(draw);
+    observer.observe(el);
+    draw(); // tentative initiale
+
+    return () => {
+      cancelled = true;
+      observer.disconnect();
+      d3.select(el).select('svg').remove();
+    };
   }, []);
 
   return (

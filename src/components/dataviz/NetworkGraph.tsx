@@ -96,10 +96,19 @@ export default function NetworkGraph() {
   const tooltipRef   = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const el = containerRef.current!;
-    const tip = tooltipRef.current!;
+    const el = containerRef.current;
+    const tip = tooltipRef.current;
+    if (!el || !tip) return;
 
-    const W = el.getBoundingClientRect().width || 700;
+    let currentSim: d3.Simulation<Node, Link> | null = null;
+
+    const draw = () => {
+      const W = el.getBoundingClientRect().width;
+      if (!W) return;
+
+      if (currentSim) { currentSim.stop(); currentSim = null; }
+      d3.select(el).select('svg').remove();
+
     const isMobile = W < 480;
     const H = isMobile ? 300 : 420;
     const radius: Record<number, number> = isMobile
@@ -247,8 +256,16 @@ export default function NetworkGraph() {
       nodeG.attr('transform', d => `translate(${d.x},${d.y})`);
     });
 
+    currentSim = sim;
+    }; // fin draw()
+
+    const observer = new ResizeObserver(draw);
+    observer.observe(el);
+    draw(); // tentative initiale
+
     return () => {
-      sim.stop();
+      observer.disconnect();
+      if (currentSim) currentSim.stop();
       d3.select(el).select('svg').remove();
     };
   }, []);

@@ -52,229 +52,254 @@ export default function AnalyticsDashboard() {
 
   // ── Bar chart ──────────────────────────────────────────────────────────────
   useEffect(() => {
-    const svg = d3.select(svgRef.current);
-    svg.selectAll('*').remove();
+    const svgEl  = svgRef.current;
+    const tip    = tooltipRef.current;
+    if (!svgEl || !tip) return;
+    const container = svgEl.parentElement;
+    if (!container) return;
 
-    const container = svgRef.current!.parentElement!;
-    const W = container.getBoundingClientRect().width || 500;
-    const isMobile = W < 480;
-    const H = isMobile ? 200 : 220;
-    const margin = {
-      top: 16,
-      right: isMobile ? 8 : 16,
-      bottom: isMobile ? 52 : 40,
-      left: isMobile ? 38 : 52,
+    const draw = () => {
+      const W = container.getBoundingClientRect().width;
+      if (!W) return; // container pas encore layouté — ResizeObserver va retry
+
+      const svg = d3.select(svgEl);
+      svg.selectAll('*').remove();
+
+      const isMobile = W < 480;
+      const H = isMobile ? 200 : 220;
+      const margin = {
+        top: 16,
+        right: isMobile ? 8 : 16,
+        bottom: isMobile ? 52 : 40,
+        left: isMobile ? 38 : 52,
+      };
+      const innerW = W - margin.left - margin.right;
+      const innerH = H - margin.top - margin.bottom;
+
+      svg.attr('width', W).attr('height', H).attr('viewBox', `0 0 ${W} ${H}`);
+
+      const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+      const x = d3.scaleBand()
+        .domain(data.map(d => d.month))
+        .range([0, innerW])
+        .padding(0.35);
+
+      const y = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.visits)! * 1.1])
+        .range([innerH, 0]);
+
+      // Grid lines
+      g.selectAll('.grid-line')
+        .data(y.ticks(isMobile ? 3 : 4))
+        .enter().append('line')
+        .attr('class', 'grid-line')
+        .attr('x1', 0).attr('x2', innerW)
+        .attr('y1', d => y(d)).attr('y2', d => y(d))
+        .attr('stroke', 'rgba(255,255,255,0.06)')
+        .attr('stroke-dasharray', '4,4');
+
+      // Axe X — labels en diagonale sur mobile pour éviter le chevauchement
+      const xAxis = g.append('g')
+        .attr('transform', `translate(0,${innerH})`)
+        .call(d3.axisBottom(x).tickSize(0))
+        .call(ax => ax.select('.domain').remove());
+
+      xAxis.selectAll('text')
+        .attr('fill', 'rgba(234,234,234,0.5)')
+        .attr('font-size', isMobile ? '9px' : '11px')
+        .attr('text-anchor', isMobile ? 'end' : 'middle')
+        .attr('dx', isMobile ? '-0.4em' : '0')
+        .attr('dy', isMobile ? '0.4em' : '1.2em')
+        .attr('transform', isMobile ? 'rotate(-40)' : null);
+
+      g.append('g')
+        .call(d3.axisLeft(y).ticks(isMobile ? 3 : 4).tickFormat(v => {
+          const n = v as number;
+          return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
+        }).tickSize(0))
+        .call(ax => ax.select('.domain').remove())
+        .selectAll('text')
+        .attr('fill', 'rgba(234,234,234,0.5)')
+        .attr('font-size', isMobile ? '9px' : '11px')
+        .attr('dx', '-6px');
+
+      // Dégradé violet
+      const defs = svg.append('defs');
+      const grad = defs.append('linearGradient')
+        .attr('id', 'bar-grad').attr('x1', '0').attr('y1', '0').attr('x2', '0').attr('y2', '1');
+      grad.append('stop').attr('offset', '0%').attr('stop-color', '#8B5CF6');
+      grad.append('stop').attr('offset', '100%').attr('stop-color', 'rgba(139,92,246,0.2)');
+
+      // Barres
+      g.selectAll('.bar')
+        .data(data)
+        .enter().append('rect')
+        .attr('class', 'bar')
+        .attr('x', d => x(d.month)!)
+        .attr('width', x.bandwidth())
+        .attr('y', innerH)
+        .attr('height', 0)
+        .attr('rx', 4)
+        .attr('fill', 'url(#bar-grad)')
+        .on('mouseenter', (event: MouseEvent, d: MonthData) => {
+          const cr = container.getBoundingClientRect();
+          tip.innerHTML = `<strong>${d.month}</strong><span>${d.visits.toLocaleString('fr-FR')} visites</span><span>${d.conversions} conversions</span>`;
+          tip.style.left = `${event.clientX - cr.left + 12}px`;
+          tip.style.top  = `${event.clientY - cr.top  - 16}px`;
+          tip.style.opacity = '1';
+          d3.select(event.currentTarget as Element).attr('fill', '#A78BFA');
+        })
+        .on('mousemove', (event: MouseEvent) => {
+          const cr = container.getBoundingClientRect();
+          tip.style.left = `${event.clientX - cr.left + 12}px`;
+          tip.style.top  = `${event.clientY - cr.top  - 16}px`;
+        })
+        .on('mouseleave', (event: MouseEvent) => {
+          tip.style.opacity = '0';
+          d3.select(event.currentTarget as Element).attr('fill', 'url(#bar-grad)');
+        })
+        .transition().duration(600).ease(d3.easeCubicOut)
+        .attr('y', d => y(d.visits))
+        .attr('height', d => innerH - y(d.visits));
     };
-    const innerW = W - margin.left - margin.right;
-    const innerH = H - margin.top - margin.bottom;
 
-    svg.attr('width', W).attr('height', H).attr('viewBox', `0 0 ${W} ${H}`);
+    const observer = new ResizeObserver(draw);
+    observer.observe(container);
+    draw(); // tentative initiale
 
-    const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
-
-    const x = d3.scaleBand()
-      .domain(data.map(d => d.month))
-      .range([0, innerW])
-      .padding(0.35);
-
-    const y = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.visits)! * 1.1])
-      .range([innerH, 0]);
-
-    // Grid lines
-    g.selectAll('.grid-line')
-      .data(y.ticks(isMobile ? 3 : 4))
-      .enter().append('line')
-      .attr('class', 'grid-line')
-      .attr('x1', 0).attr('x2', innerW)
-      .attr('y1', d => y(d)).attr('y2', d => y(d))
-      .attr('stroke', 'rgba(255,255,255,0.06)')
-      .attr('stroke-dasharray', '4,4');
-
-    // Axe X — labels en diagonale sur mobile pour éviter le chevauchement
-    const xAxis = g.append('g')
-      .attr('transform', `translate(0,${innerH})`)
-      .call(d3.axisBottom(x).tickSize(0))
-      .call(ax => ax.select('.domain').remove());
-
-    xAxis.selectAll('text')
-      .attr('fill', 'rgba(234,234,234,0.5)')
-      .attr('font-size', isMobile ? '9px' : '11px')
-      .attr('text-anchor', isMobile ? 'end' : 'middle')
-      .attr('dx', isMobile ? '-0.4em' : '0')
-      .attr('dy', isMobile ? '0.4em' : '1.2em')
-      .attr('transform', isMobile ? 'rotate(-40)' : null);
-
-    g.append('g')
-      .call(d3.axisLeft(y).ticks(isMobile ? 3 : 4).tickFormat(v => {
-        const n = v as number;
-        return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
-      }).tickSize(0))
-      .call(ax => ax.select('.domain').remove())
-      .selectAll('text')
-      .attr('fill', 'rgba(234,234,234,0.5)')
-      .attr('font-size', isMobile ? '9px' : '11px')
-      .attr('dx', '-6px');
-
-    // Dégradé violet
-    const defs = svg.append('defs');
-    const grad = defs.append('linearGradient')
-      .attr('id', 'bar-grad').attr('x1', '0').attr('y1', '0').attr('x2', '0').attr('y2', '1');
-    grad.append('stop').attr('offset', '0%').attr('stop-color', '#8B5CF6');
-    grad.append('stop').attr('offset', '100%').attr('stop-color', 'rgba(139,92,246,0.2)');
-
-    const tip = tooltipRef.current!;
-
-    // Barres
-    g.selectAll('.bar')
-      .data(data)
-      .enter().append('rect')
-      .attr('class', 'bar')
-      .attr('x', d => x(d.month)!)
-      .attr('width', x.bandwidth())
-      .attr('y', innerH)
-      .attr('height', 0)
-      .attr('rx', 4)
-      .attr('fill', 'url(#bar-grad)')
-      .on('mouseenter', (event: MouseEvent, d: MonthData) => {
-        const containerRect = svgRef.current!.parentElement!.getBoundingClientRect();
-        tip.innerHTML = `<strong>${d.month}</strong><span>${d.visits.toLocaleString('fr-FR')} visites</span><span>${d.conversions} conversions</span>`;
-        tip.style.left = `${event.clientX - containerRect.left + 12}px`;
-        tip.style.top  = `${event.clientY - containerRect.top  - 16}px`;
-        tip.style.opacity = '1';
-        d3.select(event.currentTarget as Element).attr('fill', '#A78BFA');
-      })
-      .on('mousemove', (event: MouseEvent) => {
-        const containerRect = svgRef.current!.parentElement!.getBoundingClientRect();
-        tip.style.left = `${event.clientX - containerRect.left + 12}px`;
-        tip.style.top  = `${event.clientY - containerRect.top  - 16}px`;
-      })
-      .on('mouseleave', (event: MouseEvent) => {
-        tip.style.opacity = '0';
-        d3.select(event.currentTarget as Element).attr('fill', 'url(#bar-grad)');
-      })
-      .transition().duration(600).ease(d3.easeCubicOut)
-      .attr('y', d => y(d.visits))
-      .attr('height', d => innerH - y(d.visits));
-
+    return () => observer.disconnect();
   }, [data]);
 
   // ── Line chart ─────────────────────────────────────────────────────────────
   useEffect(() => {
-    const svg = d3.select(lineRef.current);
-    svg.selectAll('*').remove();
+    const lineEl = lineRef.current;
+    if (!lineEl) return;
+    const container = lineEl.parentElement;
+    if (!container) return;
 
-    const container = lineRef.current!.parentElement!;
-    const W = container.getBoundingClientRect().width || 500;
-    const isMobile = W < 480;
-    const H = isMobile ? 150 : 160;
-    const margin = {
-      top: 16,
-      right: isMobile ? 8 : 16,
-      bottom: isMobile ? 48 : 36,
-      left: isMobile ? 34 : 48,
+    const draw = () => {
+      const W = container.getBoundingClientRect().width;
+      if (!W) return; // container pas encore layouté — ResizeObserver va retry
+
+      const svg = d3.select(lineEl);
+      svg.selectAll('*').remove();
+
+      const isMobile = W < 480;
+      const H = isMobile ? 150 : 160;
+      const margin = {
+        top: 16,
+        right: isMobile ? 8 : 16,
+        bottom: isMobile ? 48 : 36,
+        left: isMobile ? 34 : 48,
+      };
+      const innerW = W - margin.left - margin.right;
+      const innerH = H - margin.top - margin.bottom;
+
+      svg.attr('width', W).attr('height', H).attr('viewBox', `0 0 ${W} ${H}`);
+
+      const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+      const x = d3.scalePoint()
+        .domain(data.map(d => d.month))
+        .range([0, innerW])
+        .padding(0.2);
+
+      const y = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.conversions)! * 1.15])
+        .range([innerH, 0]);
+
+      // Grid
+      g.selectAll('.gl')
+        .data(y.ticks(3))
+        .enter().append('line')
+        .attr('x1', 0).attr('x2', innerW)
+        .attr('y1', d => y(d)).attr('y2', d => y(d))
+        .attr('stroke', 'rgba(255,255,255,0.06)')
+        .attr('stroke-dasharray', '4,4');
+
+      // Axes
+      const xAxisLine = g.append('g')
+        .attr('transform', `translate(0,${innerH})`)
+        .call(d3.axisBottom(x).tickSize(0))
+        .call(ax => ax.select('.domain').remove());
+
+      xAxisLine.selectAll('text')
+        .attr('fill', 'rgba(234,234,234,0.5)')
+        .attr('font-size', isMobile ? '9px' : '11px')
+        .attr('text-anchor', isMobile ? 'end' : 'middle')
+        .attr('dx', isMobile ? '-0.4em' : '0')
+        .attr('dy', isMobile ? '0.4em' : '1.2em')
+        .attr('transform', isMobile ? 'rotate(-40)' : null);
+
+      g.append('g')
+        .call(d3.axisLeft(y).ticks(3).tickSize(0))
+        .call(ax => ax.select('.domain').remove())
+        .selectAll('text')
+        .attr('fill', 'rgba(234,234,234,0.5)')
+        .attr('font-size', isMobile ? '9px' : '11px')
+        .attr('dx', '-6px');
+
+      // Area gradient
+      const defs = svg.append('defs');
+      const areaGrad = defs.append('linearGradient')
+        .attr('id', 'line-area-grad').attr('x1', '0').attr('y1', '0').attr('x2', '0').attr('y2', '1');
+      areaGrad.append('stop').attr('offset', '0%').attr('stop-color', 'rgba(139,92,246,0.3)');
+      areaGrad.append('stop').attr('offset', '100%').attr('stop-color', 'rgba(139,92,246,0)');
+
+      // Area
+      const area = d3.area<MonthData>()
+        .x(d => x(d.month)!)
+        .y0(innerH)
+        .y1(d => y(d.conversions))
+        .curve(d3.curveCatmullRom);
+
+      g.append('path')
+        .datum(data)
+        .attr('fill', 'url(#line-area-grad)')
+        .attr('d', area);
+
+      // Line
+      const line = d3.line<MonthData>()
+        .x(d => x(d.month)!)
+        .y(d => y(d.conversions))
+        .curve(d3.curveCatmullRom);
+
+      const path = g.append('path')
+        .datum(data)
+        .attr('fill', 'none')
+        .attr('stroke', '#8B5CF6')
+        .attr('stroke-width', 2.5)
+        .attr('d', line);
+
+      // Animation draw
+      const len = (path.node() as SVGPathElement).getTotalLength();
+      path
+        .attr('stroke-dasharray', len)
+        .attr('stroke-dashoffset', len)
+        .transition().duration(900).ease(d3.easeCubicInOut)
+        .attr('stroke-dashoffset', 0);
+
+      // Dots
+      g.selectAll('.dot')
+        .data(data)
+        .enter().append('circle')
+        .attr('cx', d => x(d.month)!)
+        .attr('cy', d => y(d.conversions))
+        .attr('r', 4)
+        .attr('fill', '#8B5CF6')
+        .attr('stroke', '#0A0A0A')
+        .attr('stroke-width', 2)
+        .attr('opacity', 0)
+        .transition().delay(800).duration(200)
+        .attr('opacity', 1);
     };
-    const innerW = W - margin.left - margin.right;
-    const innerH = H - margin.top - margin.bottom;
 
-    svg.attr('width', W).attr('height', H).attr('viewBox', `0 0 ${W} ${H}`);
+    const observer = new ResizeObserver(draw);
+    observer.observe(container);
+    draw(); // tentative initiale
 
-    const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
-
-    const x = d3.scalePoint()
-      .domain(data.map(d => d.month))
-      .range([0, innerW])
-      .padding(0.2);
-
-    const y = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.conversions)! * 1.15])
-      .range([innerH, 0]);
-
-    // Grid
-    g.selectAll('.gl')
-      .data(y.ticks(3))
-      .enter().append('line')
-      .attr('x1', 0).attr('x2', innerW)
-      .attr('y1', d => y(d)).attr('y2', d => y(d))
-      .attr('stroke', 'rgba(255,255,255,0.06)')
-      .attr('stroke-dasharray', '4,4');
-
-    // Axes
-    const xAxisLine = g.append('g')
-      .attr('transform', `translate(0,${innerH})`)
-      .call(d3.axisBottom(x).tickSize(0))
-      .call(ax => ax.select('.domain').remove());
-
-    xAxisLine.selectAll('text')
-      .attr('fill', 'rgba(234,234,234,0.5)')
-      .attr('font-size', isMobile ? '9px' : '11px')
-      .attr('text-anchor', isMobile ? 'end' : 'middle')
-      .attr('dx', isMobile ? '-0.4em' : '0')
-      .attr('dy', isMobile ? '0.4em' : '1.2em')
-      .attr('transform', isMobile ? 'rotate(-40)' : null);
-
-    g.append('g')
-      .call(d3.axisLeft(y).ticks(3).tickSize(0))
-      .call(ax => ax.select('.domain').remove())
-      .selectAll('text')
-      .attr('fill', 'rgba(234,234,234,0.5)')
-      .attr('font-size', isMobile ? '9px' : '11px')
-      .attr('dx', '-6px');
-
-    // Area gradient
-    const defs = svg.append('defs');
-    const areaGrad = defs.append('linearGradient')
-      .attr('id', 'line-area-grad').attr('x1', '0').attr('y1', '0').attr('x2', '0').attr('y2', '1');
-    areaGrad.append('stop').attr('offset', '0%').attr('stop-color', 'rgba(139,92,246,0.3)');
-    areaGrad.append('stop').attr('offset', '100%').attr('stop-color', 'rgba(139,92,246,0)');
-
-    // Area
-    const area = d3.area<MonthData>()
-      .x(d => x(d.month)!)
-      .y0(innerH)
-      .y1(d => y(d.conversions))
-      .curve(d3.curveCatmullRom);
-
-    g.append('path')
-      .datum(data)
-      .attr('fill', 'url(#line-area-grad)')
-      .attr('d', area);
-
-    // Line
-    const line = d3.line<MonthData>()
-      .x(d => x(d.month)!)
-      .y(d => y(d.conversions))
-      .curve(d3.curveCatmullRom);
-
-    const path = g.append('path')
-      .datum(data)
-      .attr('fill', 'none')
-      .attr('stroke', '#8B5CF6')
-      .attr('stroke-width', 2.5)
-      .attr('d', line);
-
-    // Animation draw
-    const len = (path.node() as SVGPathElement).getTotalLength();
-    path
-      .attr('stroke-dasharray', len)
-      .attr('stroke-dashoffset', len)
-      .transition().duration(900).ease(d3.easeCubicInOut)
-      .attr('stroke-dashoffset', 0);
-
-    // Dots
-    g.selectAll('.dot')
-      .data(data)
-      .enter().append('circle')
-      .attr('cx', d => x(d.month)!)
-      .attr('cy', d => y(d.conversions))
-      .attr('r', 4)
-      .attr('fill', '#8B5CF6')
-      .attr('stroke', '#0A0A0A')
-      .attr('stroke-width', 2)
-      .attr('opacity', 0)
-      .transition().delay(800).duration(200)
-      .attr('opacity', 1);
-
+    return () => observer.disconnect();
   }, [data]);
 
   return (
