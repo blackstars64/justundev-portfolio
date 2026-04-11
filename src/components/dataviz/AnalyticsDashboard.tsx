@@ -78,6 +78,16 @@ export default function AnalyticsDashboard() {
 
       svg.attr('width', W).attr('height', H).attr('viewBox', `0 0 ${W} ${H}`);
 
+      // Defs en premier — fix Chrome url(#id) resolution bug
+      const defs = svg.append('defs');
+      const grad = defs.append('linearGradient')
+        .attr('id', 'bar-grad')
+        .attr('gradientUnits', 'userSpaceOnUse')
+        .attr('x1', 0).attr('y1', margin.top)
+        .attr('x2', 0).attr('y2', H - margin.bottom);
+      grad.append('stop').attr('offset', '0%').attr('stop-color', '#8B5CF6');
+      grad.append('stop').attr('offset', '100%').attr('stop-color', 'rgba(139,92,246,0.2)');
+
       const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
       const x = d3.scaleBand()
@@ -123,13 +133,6 @@ export default function AnalyticsDashboard() {
         .attr('fill', 'rgba(234,234,234,0.5)')
         .attr('font-size', isMobile ? '9px' : '11px')
         .attr('dx', '-6px');
-
-      // Dégradé violet
-      const defs = svg.append('defs');
-      const grad = defs.append('linearGradient')
-        .attr('id', 'bar-grad').attr('x1', '0').attr('y1', '0').attr('x2', '0').attr('y2', '1');
-      grad.append('stop').attr('offset', '0%').attr('stop-color', '#8B5CF6');
-      grad.append('stop').attr('offset', '100%').attr('stop-color', 'rgba(139,92,246,0.2)');
 
       // Barres
       g.selectAll('.bar')
@@ -198,6 +201,16 @@ export default function AnalyticsDashboard() {
 
       svg.attr('width', W).attr('height', H).attr('viewBox', `0 0 ${W} ${H}`);
 
+      // Defs en premier — fix Chrome url(#id) resolution bug
+      const defs = svg.append('defs');
+      const areaGrad = defs.append('linearGradient')
+        .attr('id', 'line-area-grad')
+        .attr('gradientUnits', 'userSpaceOnUse')
+        .attr('x1', 0).attr('y1', margin.top)
+        .attr('x2', 0).attr('y2', H - margin.bottom);
+      areaGrad.append('stop').attr('offset', '0%').attr('stop-color', 'rgba(139,92,246,0.3)');
+      areaGrad.append('stop').attr('offset', '100%').attr('stop-color', 'rgba(139,92,246,0)');
+
       const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
       const x = d3.scalePoint()
@@ -239,13 +252,6 @@ export default function AnalyticsDashboard() {
         .attr('fill', 'rgba(234,234,234,0.5)')
         .attr('font-size', isMobile ? '9px' : '11px')
         .attr('dx', '-6px');
-
-      // Area gradient
-      const defs = svg.append('defs');
-      const areaGrad = defs.append('linearGradient')
-        .attr('id', 'line-area-grad').attr('x1', '0').attr('y1', '0').attr('x2', '0').attr('y2', '1');
-      areaGrad.append('stop').attr('offset', '0%').attr('stop-color', 'rgba(139,92,246,0.3)');
-      areaGrad.append('stop').attr('offset', '100%').attr('stop-color', 'rgba(139,92,246,0)');
 
       // Area
       const area = d3.area<MonthData>()
