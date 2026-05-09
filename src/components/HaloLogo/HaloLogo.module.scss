@@ -1,0 +1,101 @@
+// =============================================================================
+// HaloLogo.module.scss — Bannière logo+texte avec halo mouse-tracking
+// =============================================================================
+
+@use '../../styles/variables' as *;
+
+.wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(100% + #{$space-6} * 2);
+  margin: #{-$space-6} #{-$space-6} 0;
+  height: 160px;
+  border-radius: $radius-md $radius-md 0 0;
+  overflow: hidden;
+  border-bottom: 1px solid $border-subtle;
+  flex-shrink: 0;
+  background: #08080f;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 55% 70% at 50% 60%,
+      rgba($accent-primary, 0.18) 0%,
+      transparent 65%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+.halo {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 65% 80% at var(--halo-x, 50%) var(--halo-y, 55%),
+    rgba($accent-primary, 0.58) 0%,
+    rgba($accent-primary, 0.16) 40%,
+    transparent 68%
+  );
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 0;
+
+  .wrapper:hover & {
+    opacity: 1;
+  }
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-3;
+}
+
+.logo {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 20px rgba($accent-primary, 0.65))
+    drop-shadow(0 0 6px rgba($accent-primary, 0.45));
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  font-family: $font-sans;
+  font-size: $fs-body-lg;
+  font-weight: $fw-bold;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.pre {
+  color: $text-primary;
+}
+
+.post {
+  color: $accent-primary;
+}
+
+.fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: linear-gradient(to bottom, transparent, #08080f);
+  pointer-events: none;
+  z-index: 2;
+}

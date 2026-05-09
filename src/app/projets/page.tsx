@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { projets } from '@/data/projets';
 import HaloImage from '@/components/HaloImage/HaloImage';
+import HaloLogo from '@/components/HaloLogo/HaloLogo';
 import styles from './projets.module.scss';
 
 export const metadata: Metadata = {
@@ -30,10 +30,7 @@ export default function ProjetsPage() {
               <li key={projet.slug}>
                 <Link href={`/projets/${projet.slug}`} className={styles.card}>
                   {projet.logo && (
-                    <div className={styles.logoBlock}>
-                      <Image src={projet.logo} alt={`Logo ${projet.titre}`} width={64} height={64} />
-                      <span>{projet.titre}</span>
-                    </div>
+                    <HaloLogo src={projet.logo} labelPre="Black" labelPost="TCG" />
                   )}
                   {!projet.logo && projet.image && (
                     <HaloImage src={projet.image} alt={`Logo ${projet.titre}`} />
