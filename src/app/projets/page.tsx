@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { projets } from '@/data/projets';
 import HaloImage from '@/components/HaloImage/HaloImage';
@@ -28,11 +29,17 @@ export default function ProjetsPage() {
             {projets.map((projet) => (
               <li key={projet.slug}>
                 <Link href={`/projets/${projet.slug}`} className={styles.card}>
-                  {projet.image && (
+                  {projet.logo && (
+                    <div className={styles.logoBlock}>
+                      <Image src={projet.logo} alt={`Logo ${projet.titre}`} width={64} height={64} />
+                      <span>{projet.titre}</span>
+                    </div>
+                  )}
+                  {!projet.logo && projet.image && (
                     <HaloImage src={projet.image} alt={`Logo ${projet.titre}`} />
                   )}
                   <div className={styles.cardTop}>
-                    <span className={`${styles.statut} ${styles[`statut_${projet.statut.replace(' ', '_')}`]}`}>
+                    <span className={`${styles.statut} ${styles[`statut_${projet.statut.replace(/ /g, '_')}`]}`}>
                       {projet.statut}
                     </span>
                     <span className={styles.arrow} aria-hidden>→</span>

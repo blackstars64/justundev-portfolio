@@ -12,8 +12,9 @@ export interface Projet {
   titre:       string;
   tagline:     string;
   stack:       string[];
-  statut:      'En ligne' | 'En dev' | 'Archivé';
+  statut:      'En ligne' | 'En dev' | 'En pause' | 'Archivé';
   image?:      string;
+  logo?:       string;
   lienDemo?:   string;
   lienRepo?:   string;
   sections:    ProjetSection[];
@@ -21,10 +22,39 @@ export interface Projet {
 
 export const projets: Projet[] = [
   {
+    slug:    'blacktcg',
+    titre:   'BlackTCG',
+    tagline: "Marketplace de cartes TCG Pokémon — concurrent Cardmarket avec une meilleure UX et un système de paiement intégré.",
+    stack:   ['Next.js 16', 'TypeScript', 'Apollo Server 4', 'SCSS', 'GSAP', 'Express 5', 'Prisma 7', 'PostgreSQL', 'Stripe Connect', 'NextAuth v5'],
+    statut:  'En dev',
+    logo:    '/projets/blacktcg-logo.svg',
+    lienDemo: undefined,
+    lienRepo: undefined,
+
+    sections: [
+      {
+        titre:   'Contexte',
+        contenu: "BlackTCG est une marketplace de cartes Pokémon TCG développée en autonomie complète. L'idée : proposer une alternative à Cardmarket avec une expérience utilisateur supérieure — navigation fluide, catalogue visuel riche et un système de paiement intégré via wallet. Le projet vise à couvrir tout le cycle : dépôt d'annonces, catalogue filtrée, panier, checkout sécurisé et gestion des expéditions.",
+      },
+      {
+        titre:   'Architecture',
+        contenu: "Architecture full-stack découplée : frontend Next.js 16 (App Router, SSR/SSG hybride) + backend Express 5 avec Apollo Server 4 en GraphQL. La base PostgreSQL est gérée via Prisma 7 et hébergée sur Neon (serverless). L'authentification est assurée par NextAuth v5 côté client et JWT côté API GraphQL. Le wallet vendeur est connecté à Stripe Connect via webhooks sécurisés. Les animations visuelles sont orchestrées par GSAP — header, hero, cartes catalogue avec effets 3D.",
+      },
+      {
+        titre:   'Fonctionnalités livrées',
+        contenu: "M1 setup : monorepo Next.js + Express, SCSS design system, stores Zustand. M2 schema : 25 tables PostgreSQL + seed (102 cartes Base Set). M3 auth : JWT backend + NextAuth v5 frontend, guards GraphQL. M4 wallet : wallet service + Stripe Connect + webhook queue worker. M5 catalogue : pages /cartes et /cartes/[slug] — grille 5 colonnes, filtres multi-sélect, tri, vue liste/compact, ActiveFiltersBar, mode mobile complet. Interface premium : header transparent→opaque au scroll, BandeauCreateurs, TrendingSection, HomeHero GSAP.",
+      },
+      {
+        titre:   'En cours',
+        contenu: "M6 marketplace : module order/ (checkout wallet atomique, confirmShipment, confirmReception, cron HOLD J+7), listing CRUD complet, pages /panier · /checkout · /mes-achats · /mes-ventes · /vendre. Prochaine étape : merger M6 → dev, tester le cycle d'achat complet en conditions réelles.",
+      },
+    ],
+  },
+  {
     slug:    'gardiens-arcana',
     titre:   "Gardiens d'Arcana",
-    tagline: "Jeu de cartes roguelite desktop — battissez votre deck, affrontez les épreuves.",
-    stack:   ['Tauri', 'React', 'TypeScript', 'SQLite', 'Rust'],
+    tagline: "Jeu de cartes multijoueur en ligne — construisez votre deck, défiez d'autres joueurs en temps réel.",
+    stack:   ['Node.js', 'TypeScript', 'WebSocket', 'SQLite', 'JWT', 'Godot 4'],
     statut:  'En dev',
     image:   '/projets/gardiens-arcana.png',
     lienDemo: undefined,
@@ -33,23 +63,19 @@ export const projets: Projet[] = [
     sections: [
       {
         titre:   'Contexte',
-        contenu: "Gardiens d'Arcana est un jeu de cartes roguelite solo développé en totale autonomie pour desktop (Windows, macOS, Linux). Chaque run est unique : le joueur bâtit son deck au fil de ses victoires, acquiert des reliques et découvre des synergies de cartes inédites. L'objectif est une sortie sur itch.io puis Steam. Actuellement en Phase 6 — moteur de combat.",
+        contenu: "Gardiens d'Arcana est un jeu de cartes multijoueur en ligne développé en autonomie complète. V2 du projet : après une première version solo en Godot, la refonte introduit un serveur autoritaire Node.js qui centralise toute la logique de jeu — règles, effets de cartes, matchmaking — pour garantir la cohérence d'état entre les deux joueurs connectés en temps réel. Cible : itch.io puis Steam.",
       },
       {
         titre:   'Architecture',
-        contenu: "Le projet s'appuie sur Tauri pour packager une application desktop cross-platform à partir d'un backend Rust et d'un frontend React/TypeScript. Le backend Rust expose les Tauri Commands : résolution des effets de cartes, IA adverse, gestion des états de combat. SQLite embarqué assure la persistance locale des decks, sauvegardes de run et progression du joueur. Le frontend React orchestre les vues (lobby, deck builder, écran de combat) via des composants TypeScript fortement typés.",
+        contenu: "Serveur Node.js TypeScript autoritaire : le GameEngine valide chaque action, résout les effets de cartes (on-play, on-death, on-draw, player_choice) et synchronise l'état de partie via WebSocket. RoomManager en file FIFO pour le matchmaking. AuthService JWT + bcrypt avec base SQLite. Le client Godot 4 ne contient aucune logique de jeu — il affiche l'état reçu du serveur et envoie les intentions du joueur. Architecture en couches : types → GameState → CombatResolver → ActionValidator → EffectSystem.",
       },
       {
-        titre:   'Gameplay',
-        contenu: "Roguelite au tour par tour : chaque partie démarre avec un deck de base, s'enrichit de nouvelles cartes après chaque victoire et se termine à la mort du personnage. Le deck builder permet de construire et filtrer ses cartes par type et élément. Le système d'effets chainés (on-play, on-death, on-draw) permet des combos et synergies puissantes entre cartes. L'IA adverse adapte ses choix selon l'état du plateau.",
+        titre:   'Avancement',
+        contenu: "6 phases sur 10 terminées. Phase 0 : fondations TypeScript, config prod/preprod/dev. Phase 1 : GameEngine — 55 tests, 23 effets de cartes validés. Phase 2 : WebSocket — CardDatabase, RoomManager, serveur WS. Phase 3 : Auth — AuthService JWT + bcrypt, 66 tests. Phase 4 : rate limiting + sécurité réseau. Phase 5 : client Godot connecté (NetworkManager, GameStateCache, rendu cartes réelles). Phase 6 : decks persistants + profils + DeckBuilder Godot — 103 tests. Avancement : 60 %.",
       },
       {
-        titre:   'Stack technique',
-        contenu: "Rust — moteur de jeu, logique de combat, IA, persistance SQLite. React + TypeScript — interface utilisateur : lobby, deck builder, écran de combat. Tauri — wrapper desktop natif (bundler cross-platform, bridge Rust ↔ JS). SQLite — base de données locale embarquée pour les decks, sauvegardes et progression. Le tout compilé en un seul binaire natif par OS.",
-      },
-      {
-        titre:   'Statut',
-        contenu: "Phases 1 à 5 terminées (fondations, système de cartes, deck builder MVP, persistance SQLite, lobby et navigation). Phase 6 en cours : moteur de combat. Phases suivantes : IA adverse, roguelite loop complète, polishing animations, release itch.io. Avancement estimé : 55 %.",
+        titre:   'Prochaines étapes',
+        contenu: "Phase 7 : UX/UI — animations de combat, transitions, polishing interface Godot. Phase 8 : tests d'intégration + équilibrage des cartes. Phase 9 : déploiement VPS Hetzner + sortie itch.io sous Just'un Dev. Phase 10 : live service — ranked, saisons, gacha.",
       },
     ],
   },
@@ -58,7 +84,7 @@ export const projets: Projet[] = [
     titre:   'CaskShop',
     tagline: 'E-commerce vêtements neuf & occasion — headless Medusa v2, Stripe, Sendcloud, emails transactionnels.',
     stack:   ['TypeScript', 'Next.js 14', 'Medusa v2', 'PostgreSQL', 'Redis', 'Stripe', 'Sendcloud', 'Cloudinary', 'Resend'],
-    statut:  'En dev',
+    statut:  'En pause',
     image:   '/projets/caskshop.png',
     lienDemo: undefined,
     lienRepo: undefined,
@@ -110,7 +136,7 @@ export const projets: Projet[] = [
     titre:   'BlackDesk',
     tagline: 'OS freelance local-first — planning, projets, Insight Engine IA et Daily Control Panel.',
     stack:   ['Tauri 2', 'Next.js 16', 'TypeScript', 'SCSS', 'SQLite', 'Vitest', 'Claude API', 'Resend'],
-    statut:  'En dev',
+    statut:  'En pause',
     image:   '/projets/blackdesk.png',
     lienDemo: undefined,
     lienRepo: undefined,
